@@ -1,0 +1,7 @@
+Columns for local storage
+
+id
+name
+accountCipher
+passwordCipher
+modified
