@@ -1,70 +1,45 @@
-# Getting Started with Create React App
+# OpenApps - CryptoPASS
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+cryptoPASS is a [PWA](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app) pet project, that allows you to manage your passwords.
+**Functionality highlights**
+* Generate secure passwords.
+* Save your encrypted passwords to [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage#description).
+* Export and import your encrypted passwords as [JSON](https://www.json.org/).
+* Encrypted passwords require a secret phrase to unlock.
+* Switch between light and dark mode.
 
-## Available Scripts
+This web app is hosted at [OpenApps](https://www.openapps.co.za/apps/cryptopass/).
 
-In the project directory, you can run:
+## Getting Started
 
-### `npm start`
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Prerequisites
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+* Get Node JS setup and configured. See [this link](https://www.tutorialspoint.com/nodejs/nodejs_environment_setup.htm) for guidance.
+* Additional reading material at [this link](https://www.tutorialspoint.com/reactjs/reactjs_quick_guide.htm) for getting started with React.
 
-### `npm test`
+### Installing
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* Clone the project to your local machine.
+* In the project folder, run
+```
+npm start
+```
+* Follow [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started) for more information.
 
-### `npm run build`
+## Built With
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* [Material-UI](https://material-ui.com/) - Layout and visual effects
+* [React](https://reactjs.org/) - Web framework
+* [React Router](https://reactrouter.com/docs/en/v6/getting-started/overview/) - Routing and navigation
+* [Crypto-JS](https://www.npmjs.com/package/crypto-js/) - Password encryption
+* [NPM](https://www.npmjs.com/) - Dependency management
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Authors
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* **OpenApps Founder** - *Initial work* - [GitHub](https://github.com/openXapps/)
 
-### `npm run eject`
+## License
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
