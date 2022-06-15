@@ -1,6 +1,7 @@
 # OpenApps - CryptoPASS
 
 cryptoPASS is a [PWA](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app) pet project, that allows you to manage your passwords.
+
 **Functionality highlights**
 * Generate secure passwords.
 * Save your encrypted passwords to [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage#description).
