@@ -1,8 +1,8 @@
 import { createContext, useReducer } from 'react';
 
 import AppContextReducer from '../reducers/AppContextReducer';
-import { getDefaultData } from '../config/DefaultAppData';
-import { initialUse } from '../helpers/initializer';
+import { initialUse } from '../helpers/Initializer';
+import { getSettings } from '../helpers/LocalStorage';
 
 // https://reactjs.org/docs/context.html
 
@@ -12,12 +12,23 @@ import { initialUse } from '../helpers/initializer';
  */
 initialUse();
 
+/**
+ * Setting default application context
+ */
 const contextData = {
-  theme: getDefaultData().settings.theme,
+  theme: getSettings().data.theme,
 };
 
+/**
+ * Create application context object
+ */
 export const AppContext = createContext(contextData);
 
+/**
+ * Wrap application context around main app
+ * @param {any} props Children components
+ * @returns Wrapped component
+ */
 function AppStore(props) {
   const [appState, appDispatch] = useReducer(AppContextReducer, contextData);
   return (

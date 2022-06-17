@@ -12,7 +12,13 @@ import dark from './themes/dark';
 import light from './themes/light';
 
 // App routes
+import Header from './routes/Header';
 import Home from './routes/Home';
+import Edit from './routes/Edit';
+import Settings from './routes/Settings';
+import Download from './routes/Download';
+import Upload from './routes/Upload';
+import NoPage from './routes/NoPage';
 
 function App() {
   const [appState] = useContext(AppContext);
@@ -20,13 +26,20 @@ function App() {
   const home = '/';
   // const home = '/apps/cryptopass';
 
+  // https://reactrouter.com/docs/en/v6/getting-started/tutorial
+  
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
       <BrowserRouter basename={home}>
+        <Header />
         <Routes>
-          <Route path="/" element={<Home />}>
-          </Route>
+          <Route path="/" element={<Home />} />
+          <Route path="/edit" element={<Edit />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/download" element={<Download />} />
+          <Route path="/upload" element={<Upload />} />
+          <Route path="*" element={<NoPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

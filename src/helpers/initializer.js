@@ -1,14 +1,13 @@
 import { getDefaultData } from '../config/DefaultAppData';
-import { saveLocalStorage } from './localstorage';
+import { saveLocalStorage, getSettings, getCategories, getPasswords } from './LocalStorage';
 
 /**
 * Write initial storage on first time usage
  */
 export const initialUse = () => {
-  // TODO: Replace with local storage getters
-  const settings = { statusOK: false };
-  const categories = { statusOK: false };
-  const passwords = { statusOK: false };
+  const settings = getSettings();
+  const categories = getCategories();
+  const passwords = getPasswords();
 
   // No settings exist
   if (!settings.statusOK) {
