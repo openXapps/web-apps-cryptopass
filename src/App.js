@@ -8,8 +8,8 @@ import { createTheme } from '@mui/material/styles';
 
 // App assets
 import { AppContext } from './context/AppStore';
-import dark from './themes/dark';
 import light from './themes/light';
+import dark from './themes/dark';
 
 // App routes
 import Header from './routes/Header';
@@ -22,12 +22,12 @@ import NoPage from './routes/NoPage';
 
 function App() {
   const [appState] = useContext(AppContext);
-  const appTheme = createTheme(appState.theme.isDark ? dark : light);
+  const appTheme = createTheme(appState.themeIsDark ? dark : light);
   const home = '/';
   // const home = '/apps/cryptopass';
 
   // https://reactrouter.com/docs/en/v6/getting-started/tutorial
-  
+
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />

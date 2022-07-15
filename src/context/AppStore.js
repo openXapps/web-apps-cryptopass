@@ -16,7 +16,7 @@ initialUse();
  * Setting default application context
  */
 const contextData = {
-  theme: getSettings().data.theme,
+  themeIsDark: getSettings().data.themeIsDark,
 };
 
 /**

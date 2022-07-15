@@ -31,10 +31,8 @@ export const getDefaultData = () => {
     settings: {
       // Remember to update package.json too
       version: '0.1.0',
-      theme: {
-        isDark: false,
-        template: 'light'
-      },
+      themeIsDark: false,
+      // themeIsDark: true,
       confirmOnDelete: true,
       popularLimit: 10,
     },
@@ -58,7 +56,8 @@ export const getDefaultData = () => {
         accountCipher: 'U2FsdGVkX198GbGg850GTkUP1MnEDLlwKRX7u5wQJO/KrvI0DPeSk3mWHoGBWC7u',
         passwordCipher: 'U2FsdGVkX1+safNjGmVaUpxPcZkGRZFJj92Cuo/1llrycOdNK8iWWzpptoIVvxu2',
         favourite: true,
-        lastUsed: new Date()
+        lastUsed: new Date(),
+        lastChanged: new Date(),
       },
     ],
   };
