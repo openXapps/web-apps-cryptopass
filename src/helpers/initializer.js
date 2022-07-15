@@ -1,5 +1,5 @@
 import { getDefaultData } from '../config/DefaultAppData';
-import { saveLocalStorage, getSettings, getCategories, getPasswords } from './LocalStorage';
+import { saveLocalStorage, getSettings, getCategories, getPasswords } from './localstorage';
 
 /**
 * Write initial storage on first time usage
@@ -19,7 +19,7 @@ export const initialUse = () => {
     saveLocalStorage(getDefaultData().storageItems.categories, getDefaultData().categories);
   }
 
-  // No bookamrks exist
+  // No passworda exist
   if (!passwords.statusOK) {
     saveLocalStorage(getDefaultData().storageItems.passwords, getDefaultData().passwords);
   }

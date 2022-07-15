@@ -1,8 +1,8 @@
 import { createContext, useReducer } from 'react';
 
 import AppContextReducer from '../reducers/AppContextReducer';
-import { initialUse } from '../helpers/Initializer';
-import { getSettings } from '../helpers/LocalStorage';
+import { initialUse } from '../helpers/initializer';
+import { getSettings } from '../helpers/localstorage';
 
 // https://reactjs.org/docs/context.html
 
