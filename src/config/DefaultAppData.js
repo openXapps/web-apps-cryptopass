@@ -52,7 +52,7 @@ export const getDefaultData = () => {
       {
         categoryId: '017cf222-887b-11e9-bc42-526af7764f64',
         passwordId: '017cf222-887b-11e9-bc42-526af7764f65',
-        passwordName: 'Sample (use pass123 to unlock)',
+        passwordTitle: 'Sample (use pass123 to unlock)',
         accountCipher: 'U2FsdGVkX198GbGg850GTkUP1MnEDLlwKRX7u5wQJO/KrvI0DPeSk3mWHoGBWC7u',
         passwordCipher: 'U2FsdGVkX1+safNjGmVaUpxPcZkGRZFJj92Cuo/1llrycOdNK8iWWzpptoIVvxu2',
         favourite: true,
