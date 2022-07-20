@@ -35,7 +35,10 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/edit" element={<Edit />} />
+          <Route path="/edit" element={<Edit />}>
+            <Route path=":id" element={<Edit />} />
+            <Route path="new" element={<Edit />} />
+          </Route>
           <Route path="/settings" element={<Settings />} />
           <Route path="/download" element={<Download />} />
           <Route path="/upload" element={<Upload />} />

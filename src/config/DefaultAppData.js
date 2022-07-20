@@ -55,7 +55,7 @@ export const getDefaultData = () => {
         passwordTitle: 'Sample (use pass123 to unlock)',
         accountCipher: 'U2FsdGVkX198GbGg850GTkUP1MnEDLlwKRX7u5wQJO/KrvI0DPeSk3mWHoGBWC7u',
         passwordCipher: 'U2FsdGVkX1+safNjGmVaUpxPcZkGRZFJj92Cuo/1llrycOdNK8iWWzpptoIVvxu2',
-        favourite: true,
+        favourite: false,
         lastUsed: new Date(),
         lastChanged: new Date(),
       },

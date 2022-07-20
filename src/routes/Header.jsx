@@ -27,6 +27,14 @@ function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const { version } = getDefaultData().settings;
 
+  const handleHomeButton = () => {
+    if (rrLocation.pathname !== '/') {
+      rrNavigate('/', { replace: true });
+    } else {
+      window.location.assign('https://www.openapps.co.za');
+    }
+  };
+
   const handleMenuToggle = (e) => {
     setAnchorEl(e.currentTarget);
   };
@@ -48,7 +56,7 @@ function Header() {
             <IconButton
               aria-label="home button"
               color="inherit"
-              onClick={e => { }}
+              onClick={handleHomeButton}
             >{rrLocation.pathname === '/' ? <HomeIcon /> : <ArrowBackIcon />}</IconButton></Box>
           <Typography
             sx={{ flexGrow: 1 }}
@@ -61,11 +69,11 @@ function Header() {
             <Box>
               <IconButton
                 color="inherit"
-                onClick={e => { }}
+                onClick={() => { rrNavigate('/edit/new') }}
               ><AddCircleIcon /></IconButton>
               <IconButton
                 color="inherit"
-                onClick={e => { }}
+                onClick={() => { rrNavigate('/settings') }}
               ><SettingsIcon /></IconButton>
               <IconButton
                 sx={{ mr: { sm: 0.5 } }}

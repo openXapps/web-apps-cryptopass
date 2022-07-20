@@ -16,7 +16,10 @@ function PasswordCard(props) {
         <CardHeader
           title={props.passwordTitle}
           action={
-            <IconButton onClick={props.handlePasswordSettings}><SettingsIcon /></IconButton>
+            <IconButton
+              onClick={props.handlePasswordSettings}
+              data-id={props.passwordId}
+            ><SettingsIcon /></IconButton>
           }
         />
         <CardContent>
@@ -34,8 +37,20 @@ function PasswordCard(props) {
             justifyContent="space-between"
             sx={{ width: 1 }}
           >
-            <Button size="small" fullWidth variant="outlined" onClick={props.handleCopyAccount}>Copy Account</Button>
-            <Button size="small" fullWidth variant="outlined" onClick={props.handleCopyPassword}>Copy Password</Button>
+            <Button
+              size="small"
+              fullWidth
+              variant="outlined"
+              onClick={props.handleCopyUserName}
+              data-id={props.passwordId}
+            >Copy User Name</Button>
+            <Button
+              size="small"
+              fullWidth
+              variant="outlined"
+              onClick={props.handleCopyPassword}
+              data-id={props.passwordId}
+            >Copy Password</Button>
           </Stack>
         </CardActions>
       </Card>
