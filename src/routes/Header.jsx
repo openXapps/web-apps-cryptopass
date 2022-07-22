@@ -17,7 +17,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 // import { AppContext } from '../context/AppStore';
-import { getDefaultData } from '../config/DefaultAppData';
+import { getSettings } from '../helpers/localstorage';
 
 function Header() {
   const rrNavigate = useNavigate();
@@ -25,7 +25,6 @@ function Header() {
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const rrLocation = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
-  const { version } = getDefaultData().settings;
 
   const handleHomeButton = () => {
     if (rrLocation.pathname !== '/') {
@@ -62,7 +61,7 @@ function Header() {
             sx={{ flexGrow: 1 }}
             variant="h6"
           >CryptoPASS {smallScreen ? null : (
-            <span style={{ fontSize: 12 }}>v{version}</span>
+            <span style={{ fontSize: 12 }}>v{getSettings().data.version}</span>
           )}
           </Typography>
           {rrLocation.pathname === '/' ? (

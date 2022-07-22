@@ -4,7 +4,7 @@
  * @param {boolean} showTime Show or hide time
  * @returns Date object in user local
  */
- export const userDate = (dIn, showTime) => {
+ export const dateToString = (dIn, showTime) => {
   // console.log('userDate: dIn....', dIn);
   let dOut = '';
   const d = dIn ? new Date(dIn) : new Date();

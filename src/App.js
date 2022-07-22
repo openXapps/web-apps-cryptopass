@@ -36,7 +36,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/edit" element={<Edit />}>
-            <Route path=":id" element={<Edit />} />
+            <Route path=":passwordId" element={<Edit />} />
             <Route path="new" element={<Edit />} />
           </Route>
           <Route path="/settings" element={<Settings />} />

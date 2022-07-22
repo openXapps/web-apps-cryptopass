@@ -11,7 +11,7 @@
     case 'THEME':
       return {
         ...state,
-        theme: action.payload
+        themeIsDark: action.payload
       };
     case 'NAV':
       return {

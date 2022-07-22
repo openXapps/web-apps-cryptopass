@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Container from '@mui/material/Container';
@@ -6,10 +7,21 @@ import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 
 import PasswordCard from '../components/PasswordCard';
-import { userDate } from '../helpers/utilities';
+import { dateToString } from '../helpers/utilities';
+import { getPasswords } from '../helpers/localstorage';
 
 function Home() {
   const rrNavidate = useNavigate();
+  const [passwords, setPasswords] = useState([]);
+
+  const memorizedPasswords = useMemo(() => getPasswords().data, []);
+
+  useEffect(() => {
+    setPasswords(memorizedPasswords);
+
+    return () => true
+  }, [memorizedPasswords]);
+
 
   const handleCopyUserName = (e) => {
     console.log('handleCopyUserName: e........', e.currentTarget.dataset.id);
@@ -20,34 +32,31 @@ function Home() {
   };
 
   const handlePasswordSettings = (e) => {
-    console.log('handlePasswordSettings: e...', e.currentTarget.dataset.id);
-    e.preventDefault();
+    // console.log('handlePasswordSettings: e...', e.currentTarget.dataset.id);
     rrNavidate(`/edit/${e.currentTarget.dataset.id}`);
   }
+
+  // console.log('Home render');
 
   return (
     <Container maxWidth="md">
       <Toolbar />
       <Box mt={2}>
         <Grid container spacing={2}>
-          <PasswordCard
-            passwordId="123"
-            passwordTitle="Dropbox"
-            lastUsed={userDate(new Date('2022-07-01 13:22'), true)}
-            lastChanged={userDate(new Date('2022-05-15 07:12'), true)}
-            handleCopyUserName={handleCopyUserName}
-            handleCopyPassword={handleCopyPassword}
-            handlePasswordSettings={handlePasswordSettings}
-          />
-          <PasswordCard
-            passwordId="456"
-            passwordTitle="Google"
-            lastUsed={userDate(new Date('2022-07-09 07:15'), true)}
-            lastChanged={userDate(new Date('2021-03-12 15:01'), true)}
-            handleCopyUserName={handleCopyUserName}
-            handleCopyPassword={handleCopyPassword}
-            handlePasswordSettings={handlePasswordSettings}
-          />
+          {passwords.map(v => {
+            return (
+              <PasswordCard
+                key={v.passwordId}
+                passwordId={v.passwordId}
+                passwordTitle={v.passwordTitle}
+                lastUsed={dateToString(v.lastUsed, true)}
+                lastChanged={dateToString(v.lastChanged, true)}
+                handleCopyUserName={handleCopyUserName}
+                handleCopyPassword={handleCopyPassword}
+                handlePasswordSettings={handlePasswordSettings}
+              />
+            );
+          })}
         </Grid>
       </Box>
     </Container>
