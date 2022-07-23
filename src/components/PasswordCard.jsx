@@ -24,37 +24,47 @@ function PasswordCard(props) {
         />
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={5}><Typography>Last Used</Typography></Grid>
+            <Grid item xs={5}><Typography>Last Unlocked</Typography></Grid>
             <Grid item xs={7}><Typography textAlign="right">{props.lastUsed}</Typography></Grid>
             <Grid item xs={5}><Typography>Last Changed</Typography></Grid>
             <Grid item xs={7}><Typography textAlign="right">{props.lastChanged}</Typography></Grid>
           </Grid>
         </CardContent>
         <CardActions>
-          <Stack
-            spacing={{ xs: 1, md: 2 }}
-            direction="row"
-            justifyContent="space-between"
-            sx={{ width: 1 }}
-          >
+          {props.passwordId !== props.passwordIdUnlocked ? (
             <Button
               size="small"
               fullWidth
               variant="outlined"
-              onClick={props.handleCopyUserName}
+              onClick={props.handleUnlockButton}
               data-id={props.passwordId}
-            >Copy User Name</Button>
-            <Button
-              size="small"
-              fullWidth
-              variant="outlined"
-              onClick={props.handleCopyPassword}
-              data-id={props.passwordId}
-            >Copy Password</Button>
-          </Stack>
+            >Unlock Password</Button>
+          ) : (
+            <Stack
+              spacing={{ xs: 1, md: 2 }}
+              direction="row"
+              justifyContent="space-between"
+              sx={{ width: 1 }}
+            >
+              <Button
+                size="small"
+                fullWidth
+                variant="outlined"
+                onClick={props.handleCopyUserName}
+                data-id={props.passwordId}
+              >Copy User Name</Button>
+              <Button
+                size="small"
+                fullWidth
+                variant="outlined"
+                onClick={props.handleCopyPassword}
+                data-id={props.passwordId}
+              >Copy Password</Button>
+            </Stack>
+          )}
         </CardActions>
       </Card>
-    </Grid>
+    </Grid >
   );
 }
 
