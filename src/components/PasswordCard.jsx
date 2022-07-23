@@ -10,11 +10,14 @@ import CardActions from '@mui/material/CardActions';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 function PasswordCard(props) {
+  const isActive = props.passwordId === props.passwordIdUnlocked;
+
   return (
     <Grid item xs={12} sm={6}>
       <Card elevation={5}>
         <CardHeader
           title={props.passwordTitle}
+          titleTypographyProps={isActive ? { color: 'text.primary' } : { color: 'text.secondary' }}
           action={
             <IconButton
               onClick={props.handlePasswordSettings}
@@ -31,7 +34,7 @@ function PasswordCard(props) {
           </Grid>
         </CardContent>
         <CardActions>
-          {props.passwordId !== props.passwordIdUnlocked ? (
+          {!isActive ? (
             <Button
               size="small"
               fullWidth
@@ -50,6 +53,7 @@ function PasswordCard(props) {
                 size="small"
                 fullWidth
                 variant="outlined"
+                color={isActive ? 'warning' : 'info'}
                 onClick={props.handleCopyUserName}
                 data-id={props.passwordId}
               >Copy User Name</Button>
@@ -57,6 +61,7 @@ function PasswordCard(props) {
                 size="small"
                 fullWidth
                 variant="outlined"
+                color={isActive ? 'warning' : 'secondary'}
                 onClick={props.handleCopyPassword}
                 data-id={props.passwordId}
               >Copy Password</Button>

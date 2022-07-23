@@ -8,7 +8,7 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+// import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -30,15 +30,17 @@ const initialPassword = {
   lastChanged: new Date(),
 };
 
+const initialAccount = { username: '', password: '' };
+
 function Home() {
   const rrNavidate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [account, setAccount] = useState(initialAccount);
   const [password, setPassword] = useState(initialPassword);
   const [passwords, setPasswords] = useState([]);
   const [passwordIdToBeUnlocked, setPasswordIdToBeUnlocked] = useState('');
   const [passwordIdUnlocked, setPasswordIdUnlocked] = useState('');
   const [passwordUnlockSecret, setPasswordUnlockSecret] = useState('');
-  const [account, setAccount] = useState({ username: '', password: '' });
   const [decryptError, setDecryptError] = useState(false);
 
   const memorizedPasswords = useMemo(() => getPasswords().data, []);
@@ -51,25 +53,28 @@ function Home() {
 
   // Manage dialog state
   const handleDialogOpen = () => setDialogOpen(true);
-  const handleDialogClose = () => setDialogOpen(false);
-
-  const handleCopyUserName = (e) => {
-    console.log('handleCopyUserName: e........', e.currentTarget.dataset.id);
-  };
-
-  const handleCopyPassword = (e) => {
-    console.log('handleCopyPassword: e.......', e.currentTarget.dataset.id);
+  const handleDialogClose = () => {
+    setDecryptError(false);
+    setPasswordUnlockSecret('');
+    setDialogOpen(false);
   };
 
   const handlePasswordSettings = (e) => {
-    // console.log('handlePasswordSettings: e...', e.currentTarget.dataset.id);
     rrNavidate(`/edit/${e.currentTarget.dataset.id}`);
   }
 
+  const handleCopyUserName = () => {
+    console.log('handleCopyUserName: username........', account.username);
+  };
+
+  const handleCopyPassword = () => {
+    console.log('handleCopyPassword: password........', account.password);
+  };
+
   const handleUnlockButton = (e) => {
-    // console.log('Home: password...', getPasswordById(e.currentTarget.dataset.id).data[0]);
     setPassword(getPasswordById(e.currentTarget.dataset.id).data[0]);
     setPasswordIdToBeUnlocked(e.currentTarget.dataset.id);
+    setAccount(initialAccount);
     handleDialogOpen();
   };
 
@@ -79,25 +84,37 @@ function Home() {
 
   const handleUnlockConfirm = (e) => {
     e.preventDefault();
-    if (passwordUnlockSecret) {
+    let _username = '';
+    let _password = '';
+    // console.log('passwordUnlockSecret...', passwordUnlockSecret);
+    if (passwordUnlockSecret.length > 0) {
       try {
         const bytesAccount = CryptoJs.AES.decrypt(password.accountCipher, passwordUnlockSecret);
         const bytesPassword = CryptoJs.AES.decrypt(password.passwordCipher, passwordUnlockSecret);
-        setAccount({
-          username: bytesAccount.toString(CryptoJs.enc.Utf8),
-          password: bytesPassword.toString(CryptoJs.enc.Utf8)
-        });
-        setDecryptError(false);
-        // setPasswordIdUnlocked(passwordIdToBeUnlocked);
-        // handleDialogClose();
+        _username = bytesAccount.toString(CryptoJs.enc.Utf8);
+        _password = bytesPassword.toString(CryptoJs.enc.Utf8)
+        // console.log('_username...', _username);
+        // console.log('_password...', _password);
+        if (_username.length > 0 && _password.length > 0) {
+          // console.log('All good');
+          setAccount({
+            username: _username,
+            password: _password
+          });
+          setDecryptError(false);
+          setPasswordIdUnlocked(passwordIdToBeUnlocked);
+          handleDialogClose();
+        } else {
+          // console.log('Invalid secret');
+          throw new Error('Invalid secret');
+        }
       } catch (error) {
+        // console.log('error...', error);
         setDecryptError(true);
         // setPasswordIdUnlocked('');
       }
-    }
+    } else { setDecryptError(true) }
   };
-
-
 
   // console.log('Home render');
 
@@ -138,11 +155,11 @@ function Home() {
           <DialogContentText
             id="alert-dialog-description"
           >Enter your password unlock secret</DialogContentText>
-          <Typography>{passwordIdToBeUnlocked}</Typography>
+          {/* <Typography>{passwordIdToBeUnlocked}</Typography>
           <Typography>{password.accountCipher}</Typography>
           <Typography>{password.passwordCipher}</Typography>
           <Typography>{account.username}</Typography>
-          <Typography>{account.password}</Typography>
+          <Typography>{account.password}</Typography> */}
           <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockConfirm}>
             <TextField
               sx={{ mt: 2 }}
