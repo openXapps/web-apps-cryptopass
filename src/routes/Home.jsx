@@ -1,24 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// https://www.npmjs.com/package/crypto-js
-import CryptoJs from 'crypto-js';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-// import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import PasswordCard from '../components/PasswordCard';
-import { dateToString } from '../helpers/utilities';
+import { dateToString, decryptCipher, copyToClipboard } from '../helpers/utilities';
 import { getPasswords, getPasswordById } from '../helpers/localstorage';
 
 const initialPassword = {
@@ -34,6 +29,8 @@ const initialAccount = { username: '', password: '' };
 
 function Home() {
   const rrNavidate = useNavigate();
+  // https://stackoverflow.com/questions/59647940/how-can-i-use-ref-in-textfield
+  const secretEl = useRef(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [account, setAccount] = useState(initialAccount);
   const [password, setPassword] = useState(initialPassword);
@@ -43,16 +40,26 @@ function Home() {
   const [passwordUnlockSecret, setPasswordUnlockSecret] = useState('');
   const [decryptError, setDecryptError] = useState(false);
 
+  // Create a memorized password list
   const memorizedPasswords = useMemo(() => getPasswords().data, []);
 
+  // Manage passwords state
   useEffect(() => {
     setPasswords(memorizedPasswords);
-
     return () => true
   }, [memorizedPasswords]);
 
   // Manage dialog state
-  const handleDialogOpen = () => setDialogOpen(true);
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+    // Wait for dialog component to render
+    // else secretEl is undefined
+    setTimeout(() => {
+      secretEl.current.focus();
+    }, 500);
+  };
+
+  // Manage dialog state
   const handleDialogClose = () => {
     setDecryptError(false);
     setPasswordUnlockSecret('');
@@ -64,11 +71,13 @@ function Home() {
   }
 
   const handleCopyUserName = () => {
-    console.log('handleCopyUserName: username........', account.username);
+    // console.log('handleCopyUserName: username........', account.username);
+    copyToClipboard(account.username);
   };
 
   const handleCopyPassword = () => {
-    console.log('handleCopyPassword: password........', account.password);
+    // console.log('handleCopyPassword: password........', account.password);
+    copyToClipboard(account.password);
   };
 
   const handleUnlockButton = (e) => {
@@ -78,42 +87,32 @@ function Home() {
     handleDialogOpen();
   };
 
-  const handlePasswordUnlockSecertChange = (e) => {
-    setPasswordUnlockSecret(e.currentTarget.value);
-  };
-
   const handleUnlockConfirm = (e) => {
     e.preventDefault();
-    let _username = '';
-    let _password = '';
+    let _username = { ok: false, message: '', value: '' };
+    let _password = { ok: false, message: '', value: '' };
     // console.log('passwordUnlockSecret...', passwordUnlockSecret);
     if (passwordUnlockSecret.length > 0) {
-      try {
-        const bytesAccount = CryptoJs.AES.decrypt(password.accountCipher, passwordUnlockSecret);
-        const bytesPassword = CryptoJs.AES.decrypt(password.passwordCipher, passwordUnlockSecret);
-        _username = bytesAccount.toString(CryptoJs.enc.Utf8);
-        _password = bytesPassword.toString(CryptoJs.enc.Utf8)
-        // console.log('_username...', _username);
-        // console.log('_password...', _password);
-        if (_username.length > 0 && _password.length > 0) {
-          // console.log('All good');
-          setAccount({
-            username: _username,
-            password: _password
-          });
-          setDecryptError(false);
-          setPasswordIdUnlocked(passwordIdToBeUnlocked);
-          handleDialogClose();
-        } else {
-          // console.log('Invalid secret');
-          throw new Error('Invalid secret');
-        }
-      } catch (error) {
-        // console.log('error...', error);
+      _username = decryptCipher(password.accountCipher, passwordUnlockSecret);
+      _password = decryptCipher(password.passwordCipher, passwordUnlockSecret);
+      // console.log('_username...', _username);
+      // console.log('_password...', _password);
+      if (_username.ok && _password.ok) {
+        // console.log('Decryption good');
+        setAccount({
+          username: _username.value,
+          password: _password.value
+        });
+        setPasswordIdUnlocked(passwordIdToBeUnlocked);
+        handleDialogClose();
+      } else {
+        // console.log('Decryption failed');
         setDecryptError(true);
-        // setPasswordIdUnlocked('');
       }
-    } else { setDecryptError(true) }
+    } else {
+      // console.log('Invalid secret');
+      setDecryptError(true);
+    }
   };
 
   // console.log('Home render');
@@ -144,38 +143,26 @@ function Home() {
         </Box>
       </Container>
 
-      <Dialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Unlock Password</DialogTitle>
+      <Dialog open={dialogOpen} onClose={handleDialogClose} aria-labelledby="alert-dialog-title">
+        <DialogTitle id="alert-dialog-title" textAlign="center">Unlock Password</DialogTitle>
         <DialogContent>
-          <DialogContentText
-            id="alert-dialog-description"
-          >Enter your password unlock secret</DialogContentText>
-          {/* <Typography>{passwordIdToBeUnlocked}</Typography>
-          <Typography>{password.accountCipher}</Typography>
-          <Typography>{password.passwordCipher}</Typography>
-          <Typography>{account.username}</Typography>
-          <Typography>{account.password}</Typography> */}
           <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockConfirm}>
             <TextField
+              inputRef={secretEl}
               sx={{ mt: 2 }}
               error={decryptError}
               label="Secret"
               variant="outlined"
               type="password"
               value={passwordUnlockSecret}
-              onChange={handlePasswordUnlockSecertChange}
+              onChange={e => setPasswordUnlockSecret(e.currentTarget.value)}
               fullWidth
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleUnlockConfirm} color="primary">Unlock</Button>
-          <Button onClick={handleDialogClose} color="primary" autoFocus>Close</Button>
+          <Button onClick={handleUnlockConfirm} fullWidth variant="outlined">Unlock</Button>
+          <Button onClick={handleDialogClose} fullWidth variant="outlined">Close</Button>
         </DialogActions>
       </Dialog>
     </div>

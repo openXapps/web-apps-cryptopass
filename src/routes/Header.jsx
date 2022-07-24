@@ -16,12 +16,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
-// import { AppContext } from '../context/AppStore';
 import { getSettings } from '../helpers/localstorage';
 
 function Header() {
   const rrNavigate = useNavigate();
-  // const [state, dispatch] = useContext(AppContext);
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const rrLocation = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -91,7 +89,6 @@ function Header() {
                 onClose={handleMenuClose}
               >
                 <MenuItem onClick={handleRoute} data-name='settings'>Settings</MenuItem>
-                <MenuItem onClick={handleRoute} data-name='categories'>Categories</MenuItem>
                 <MenuItem onClick={handleRoute} data-name='download'>Backup my Data</MenuItem>
                 <MenuItem onClick={handleRoute} data-name='upload'>Restore my Backups</MenuItem>
               </Menu>

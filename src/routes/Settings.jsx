@@ -52,24 +52,24 @@ const Settings = () => {
           <Typography>Confirm On Delete</Typography>
           <Switch checked={_confirmOnDelete} onChange={handleConfirmOnDelete} />
         </Stack>
-          <Stack spacing={2} direction="row" alignItems="center" pr={1} my={2} mr={2}>
-            <Typography sx={{ mr: 3 }}>Password Length</Typography>
-            <Slider
-              defaultValue={settings.passwordLengthMarker}
-              step={5}
-              marks={passwordLengthMarkers}
-              min={passwordLengthMarkers[0].value}
-              max={passwordLengthMarkers[passwordLengthMarkers.length - 1].value}
-              onChangeCommitted={handlePasswordLengthMarker}
-            />
-          </Stack>
+        <Stack spacing={2} direction="row" alignItems="center" pr={1} my={2} mr={2}>
+          <Typography sx={{ mr: 3 }}>Password Length</Typography>
+          <Slider
+            defaultValue={settings.passwordLengthMarker}
+            step={5}
+            marks={passwordLengthMarkers}
+            min={passwordLengthMarkers[0].value}
+            max={passwordLengthMarkers[passwordLengthMarkers.length - 1].value}
+            onChangeCommitted={handlePasswordLengthMarker}
+          />
+        </Stack>
+        <Button
+          sx={{ mt: 2 }}
+          variant="outlined"
+          fullWidth
+          onClick={() => rrNavigate(-1)}
+        >Back</Button>
       </Paper>
-      <Button
-        sx={{mt: 2}}
-        variant="outlined"
-        fullWidth
-        onClick={() => rrNavigate(-1)}
-      >Back</Button>
     </Container>
   );
 };
