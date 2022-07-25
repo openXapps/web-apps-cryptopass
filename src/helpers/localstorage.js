@@ -46,7 +46,7 @@ export const getPasswords = () => {
     if (passwords) {
       response = {
         statusOK: true,
-        data: passwords.sort((a, b) => (a.passwordName > b.passwordName) ? 1 : -1)
+        data: passwords.sort((a, b) => (a.lastUsed < b.lastUsed) ? 1 : -1)
       };
     } else {
       throw new Error('No items found in localStorage');
@@ -78,14 +78,15 @@ export const updateLastClicked = (passwordId) => {
 
 /**
  * Helper function to update a single password object
- * @param {any} password Password object to update
+ * @param {string} passwordId Password ID to update
+ * @param {any} newPassword Password object to update
  */
-export const updatePassword = (password) => {
+export const updatePassword = (passwordId, newPassword) => {
   const passwords = getPasswords();
 
   if (passwords.statusOK) {
     const newPasswords = passwords.data.map((v, i) => {
-      return (v.passwordId === password.passwordId ? (password) : (v));
+      return (v.passwordId === passwordId ? (newPassword) : (v));
     });
     // console.log('updatePassword: newPasswords...', newPasswords);
     saveLocalStorage(storageItems.passwords, newPasswords);

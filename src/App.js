@@ -23,8 +23,8 @@ import NoPage from './routes/NoPage';
 function App() {
   const [appState] = useContext(AppContext);
   const appTheme = createTheme(appState.themeIsDark ? dark : light);
-  const home = '/';
-  // const home = '/apps/cryptopass';
+  // const home = '/';
+  const home = '/apps/cryptopass';
 
   // https://reactrouter.com/docs/en/v6/getting-started/tutorial
 

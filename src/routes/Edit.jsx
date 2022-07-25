@@ -7,16 +7,23 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { getPasswordById, updatePassword } from '../helpers/localstorage';
+import {
+  getPasswordById,
+  updatePassword,
+  addPassword,
+  deletePassword
+} from '../helpers/localstorage';
 import { dateToString, decryptCipher, encryptString } from '../helpers/utilities';
-import { storageItems } from '../config/defaults';
 
 const initialFieldData = {
-  passwordId: uuidv1(),
+  passwordId: '',
   passwordTitle: '',
   accountCipher: '',
   passwordCipher: '',
@@ -34,25 +41,24 @@ function Edit() {
   const [mode, setMode] = useState('');
   const [header, setHeader] = useState('');
   const [fields, setFields] = useState(initialFieldData);
-  // const [secret, setSecret] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [decryptError, setDecryptError] = useState(false);
-  const [isLocked, setIsLocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
 
   useEffect(() => {
-    // console.log('Edit effect render');
     if (rrPath === '/edit/new') {
       setMode('NEW');
       setHeader('Create New Password');
+      setIsUnlocked(true);
     } else {
       if (passwordId) {
         setMode('EDIT');
         setHeader('Edit Password');
-        setIsLocked(true);
         let password = getPasswordById(passwordId).data;
         if (password.length > 0) setFields({
-          accountName: '***************************',
-          accountPassword: '***************************',
+          accountName: '*********',
+          accountPassword: '************',
           accountSecret: '',
           passwordId: passwordId,
           passwordTitle: password[0].passwordTitle,
@@ -67,9 +73,10 @@ function Edit() {
   }, [rrPath, passwordId]);
 
   const handleFieldChange = ({ target: { name, value } }) => {
-    setFields({ ...fields, [name]: value });
-    if (isSaved && name !== 'accountSecret') setIsSaved(false);
+    // if (isSaved && name !== 'accountSecret') setIsSaved(false);
+    if (isSaved && isUnlocked) setIsSaved(false);
     if (decryptError) setDecryptError(false);
+    setFields({ ...fields, [name]: value });
   };
 
   const handleUnlockButton = (e) => {
@@ -77,51 +84,77 @@ function Edit() {
     let _username = { ok: false, message: '', value: '' };
     let _password = { ok: false, message: '', value: '' };
     // console.log('passwordUnlockSecret...', passwordUnlockSecret);
-    if (fields.accountSecret.length > 0) {
-      _username = decryptCipher(fields.accountCipher, fields.accountSecret);
-      _password = decryptCipher(fields.passwordCipher, fields.accountSecret);
-      // console.log('_username...', _username);
-      // console.log('_password...', _password);
-      if (_username.ok && _password.ok) {
-        // console.log('Decryption good');
-        setFields(prevState => {
-          return {
-            ...prevState,
-            accountName: _username.value,
-            accountPassword: _password.value
-          };
-        });
-        // handleDialogClose();
-        if (decryptError) setDecryptError(false);
-        setIsLocked(false);
+    if (!isUnlocked) {
+      if (fields.accountSecret.length > 0) {
+        _username = decryptCipher(fields.accountCipher, fields.accountSecret);
+        _password = decryptCipher(fields.passwordCipher, fields.accountSecret);
+        // console.log('_username...', _username);
+        // console.log('_password...', _password);
+        if (_username.ok && _password.ok) {
+          // console.log('Decryption good');
+          setFields(prevState => {
+            return {
+              ...prevState,
+              accountName: _username.value,
+              accountPassword: _password.value
+            };
+          });
+          // handleDialogClose();
+          if (decryptError) setDecryptError(false);
+          setIsUnlocked(true);
+        } else {
+          // console.log('Decryption failed');
+          if (!decryptError) setDecryptError(true);
+          if (isUnlocked) setIsUnlocked(false);
+        }
       } else {
-        // console.log('Decryption failed');
+        // console.log('Invalid accountSecret');
         if (!decryptError) setDecryptError(true);
-        if (isLocked) setIsLocked(true);
+        if (isUnlocked) setIsUnlocked(false);
       }
-    } else {
-      // console.log('Invalid accountSecret');
-      if (!decryptError) setDecryptError(true);
-      if (isLocked) setIsLocked(true);
     }
   };
 
   const handleSaveButton = (e) => {
-    // ToDo: form validation
     let isFormValid = true
     let passwordToSave = {};
+
+    // ToDo: form validation
+    // isFormValid = validateForm(`PASSWORD_${mode}`, fields);
+
     if (fields.accountSecret.length > 0 && isFormValid) {
       passwordToSave = {
-        passwordId: fields.passwordId,
+        passwordId: mode === 'EDIT' ? fields.passwordId : uuidv1(),
         passwordTitle: fields.passwordTitle,
         accountCipher: encryptString(fields.accountName, fields.accountSecret),
         passwordCipher: encryptString(fields.accountPassword, fields.accountSecret),
-        lastUsed: new Date(fields.lastUsed),
+        lastUsed: new Date(),
         lastChanged: new Date(),
       };
-      console.log('passwordToSave...', passwordToSave);
-      updatePassword(passwordToSave);
-      setIsSaved(true);
+      // console.log('passwordToSave...', passwordToSave);
+      if (mode === 'EDIT') {
+        updatePassword(passwordToSave.passwordId, passwordToSave);
+        setIsSaved(true);
+      } else {
+        addPassword(passwordToSave);
+        setIsSaved(true);
+        setIsUnlocked(false);
+        setTimeout(() => {
+          rrNavigate(`/edit/${passwordToSave.passwordId}`, { replace: true });
+        }, 800);
+      };
+    }
+  };
+
+  const handleDeleteButton = (e) => {
+    // ToDo: need to implement confirmation dialog
+    if (mode === 'EDIT' && passwordId) {
+      deletePassword(passwordId);
+      setFields({ ...initialFieldData, passwordId: uuidv1() });
+      setIsUnlocked(true);
+      setTimeout(() => {
+        rrNavigate('/edit/new', { replace: true });
+      }, 800);
     }
   };
 
@@ -145,20 +178,28 @@ function Edit() {
             variant="outlined"
             name="accountName"
             autoComplete="off"
+            disabled={!isUnlocked}
             value={fields.accountName}
             onChange={handleFieldChange}
             fullWidth
           />
-          <TextField
-            label="Password"
-            variant="outlined"
-            name="accountPassword"
-            // type="password"
-            autoComplete="off"
-            value={fields.accountPassword}
-            onChange={handleFieldChange}
-            fullWidth
-          />
+          <Stack spacing={2} direction="row" alignItems="center">
+            <TextField
+              label="Password"
+              variant="outlined"
+              name="accountPassword"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="off"
+              disabled={!isUnlocked}
+              value={fields.accountPassword}
+              onChange={handleFieldChange}
+              fullWidth
+            />
+            <IconButton
+              onClick={() => setShowPassword(!showPassword)}
+              disabled={!isUnlocked}
+            >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+          </Stack>
           <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
             <Stack spacing={2} direction="row" alignItems="center">
               <TextField
@@ -174,7 +215,7 @@ function Edit() {
               <Button
                 onClick={handleUnlockButton}
                 variant="outlined"
-                disabled={!isLocked}
+                disabled={isUnlocked}
               >Unlock</Button>
             </Stack>
           </Box>
@@ -204,7 +245,7 @@ function Edit() {
             color="warning"
             variant="outlined"
             fullWidth
-            onClick={e => { }}
+            onClick={handleDeleteButton}
             disabled={mode === 'NEW'}
           >Delete</Button>
           <Button

@@ -36,6 +36,7 @@ function PasswordCard(props) {
         <CardActions>
           {!isActive ? (
             <Button
+              sx={{ mb: 1 }}
               size="small"
               fullWidth
               variant="outlined"
@@ -48,6 +49,7 @@ function PasswordCard(props) {
               direction="row"
               justifyContent="space-between"
               sx={{ width: 1 }}
+              mb={1}
             >
               <Button
                 size="small"

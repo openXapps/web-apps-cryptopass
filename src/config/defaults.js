@@ -29,28 +29,20 @@ export const cryptopassSettings = {
  */
 export const cryptopassPasswords = [
   {
-    passwordId: '017cf222-887b-11e9-bc42-526af7764f65',
-    passwordTitle: 'Dropbox (pass123 to unlock)',
-    accountCipher: 'U2FsdGVkX198GbGg850GTkUP1MnEDLlwKRX7u5wQJO/KrvI0DPeSk3mWHoGBWC7u',
-    passwordCipher: 'U2FsdGVkX1+safNjGmVaUpxPcZkGRZFJj92Cuo/1llrycOdNK8iWWzpptoIVvxu2',
+    passwordId: '3f06d370-0c12-11ed-ae72-e1ce8082c3c0',
+    passwordTitle: 'Dropbox (123 to unlock)',
+    accountCipher: 'U2FsdGVkX18UkooE1O/HwnEBl5lJqE8VekjxXi4P9pzEPYu7kM/gdzJ53atEkF3H',
+    passwordCipher: 'U2FsdGVkX1/Kh7o4GNi+++PvLQKiJrdk5GgsUKrFJbdf2P1RcF866zJb412DRh4l',
     lastUsed: new Date('2022-07-01 13:22'),
     lastChanged: new Date('2022-05-15 07:12'),
   },
   {
-    passwordId: '017cf222-887b-11e9-bc42-526af7764f64',
-    passwordTitle: 'Google (pass123 to unlock)',
-    accountCipher: 'U2FsdGVkX198GbGg850GTkUP1MnEDLlwKRX7u5wQJO/KrvI0DPeSk3mWHoGBWC7u',
-    passwordCipher: 'U2FsdGVkX1+safNjGmVaUpxPcZkGRZFJj92Cuo/1llrycOdNK8iWWzpptoIVvxu2',
+    passwordId: '3f06d370-0c12-11ed-ae72-e1ce8082c3c1',
+    passwordTitle: 'Google (123 to unlock)',
+    accountCipher: 'U2FsdGVkX18UkooE1O/HwnEBl5lJqE8VekjxXi4P9pzEPYu7kM/gdzJ53atEkF3H',
+    passwordCipher: 'U2FsdGVkX1/Kh7o4GNi+++PvLQKiJrdk5GgsUKrFJbdf2P1RcF866zJb412DRh4l',
     lastUsed: new Date('2022-07-09 07:15'),
     lastChanged: new Date('2021-03-12 15:01'),
-  },
-  {
-    passwordId: '017cf222-887b-11e9-bc42-526af7764f67',
-    passwordTitle: 'Microsoft (pass123 to unlock)',
-    accountCipher: 'U2FsdGVkX198GbGg850GTkUP1MnEDLlwKRX7u5wQJO/KrvI0DPeSk3mWHoGBWC7u',
-    passwordCipher: 'U2FsdGVkX1+safNjGmVaUpxPcZkGRZFJj92Cuo/1llrycOdNK8iWWzpptoIVvxu2',
-    lastUsed: new Date('2022-07-10 07:45'),
-    lastChanged: new Date('2021-01-29 14:21'),
   },
 ];
 

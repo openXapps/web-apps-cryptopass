@@ -14,7 +14,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import PasswordCard from '../components/PasswordCard';
 import { dateToString, decryptCipher, copyToClipboard } from '../helpers/utilities';
-import { getPasswords, getPasswordById } from '../helpers/localstorage';
+import { getPasswords, getPasswordById, updateLastClicked } from '../helpers/localstorage';
 
 const initialPassword = {
   passwordId: '',
@@ -104,6 +104,7 @@ function Home() {
           password: _password.value
         });
         setPasswordIdUnlocked(passwordIdToBeUnlocked);
+        updateLastClicked(password.passwordId);
         handleDialogClose();
       } else {
         // console.log('Decryption failed');
@@ -114,8 +115,6 @@ function Home() {
       setDecryptError(true);
     }
   };
-
-  // console.log('Home render');
 
   return (
     <div>
