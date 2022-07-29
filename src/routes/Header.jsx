@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect, useDeferredValue } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -16,13 +16,27 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
+import SearchField from '../components/SearchField';
+import { AppContext } from '../context/AppStore';
+// import AppContextReducer from '../context/AppReducer';
 import { getSettings } from '../helpers/localstorage';
 
 function Header() {
   const rrNavigate = useNavigate();
-  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const rrLocation = useLocation();
+  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [anchorEl, setAnchorEl] = useState(null);
+  const [appState, appDispatch] = useContext(AppContext);
+  // const [searchField, setSearchField] = useState(appState.searchField);
+  // const searchFieldDeferred = useDeferredValue(appState.searchString);
+
+  // console.log('Header: appState...', appState);
+
+  // useEffect(() => {
+  //   appDispatch({ type: 'SEARCH', payload: searchFieldDeferred });
+
+  //   return () => true;
+  // }, [searchFieldDeferred, appDispatch]);
 
   const handleHomeButton = () => {
     if (rrLocation.pathname !== '/') {
@@ -45,6 +59,11 @@ function Header() {
     rrNavigate(`/${e.currentTarget.dataset.name}`);
   };
 
+  const handleSeachFieldChange = (e) => {
+    // setSearchField(e.currentTarget.value);
+    appDispatch({ type: 'SEARCH', payload: e.currentTarget.value });
+  };
+
   return (
     <AppBar color="inherit">
       <Container maxWidth="md" disableGutters>
@@ -63,7 +82,13 @@ function Header() {
           )}
           </Typography>
           {rrLocation.pathname === '/' ? (
-            <Box>
+            <Box display="flex" flexDirection="row">
+              {!smallScreen && (
+                <SearchField
+                  searchFieldValue={appState.searchString}
+                  handleSeachFieldChange={handleSeachFieldChange}
+                />
+              )}
               <IconButton
                 color="inherit"
                 onClick={() => { rrNavigate('/edit/new') }}

@@ -17,6 +17,7 @@ initialUse();
  */
 const contextData = {
   themeIsDark: getSettings().data.themeIsDark,
+  searchString: ''
 };
 
 /**

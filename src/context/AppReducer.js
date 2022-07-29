@@ -13,10 +13,10 @@
         ...state,
         themeIsDark: action.payload
       };
-    case 'NAV':
+    case 'SEARCH':
       return {
         ...state,
-        navState: action.payload
+        searchString: action.payload
       };
     default:
       throw new Error(`Reducer action type not defined: ${action.type}`);
