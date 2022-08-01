@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useDeferredValue } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -82,7 +82,7 @@ function Header() {
           )}
           </Typography>
           {rrLocation.pathname === '/' ? (
-            <Box display="flex" flexDirection="row">
+            <Box display="flex" flexDirection="row" columnGap={0.5}>
               {!smallScreen && (
                 <SearchField
                   searchFieldValue={appState.searchString}

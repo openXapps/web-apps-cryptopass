@@ -164,11 +164,31 @@ function Edit() {
       <Typography variant="h6" sx={{ mt: 2 }}>{header}</Typography>
       <Paper sx={{ mt: 2, p: 2 }}>
         <Stack spacing={2}>
+          <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
+            <Stack spacing={2} direction="row" alignItems="center">
+              <TextField
+                error={decryptError}
+                label="Secret"
+                variant="outlined"
+                type="password"
+                name="accountSecret"
+                value={fields.accountSecret}
+                onChange={handleFieldChange}
+                fullWidth
+              />
+              <Button
+                onClick={handleUnlockButton}
+                variant="outlined"
+                disabled={isUnlocked}
+              >Unlock</Button>
+            </Stack>
+          </Box>
           <TextField
             label="Title"
             variant="outlined"
             name="passwordTitle"
             autoComplete="off"
+            disabled={!isUnlocked}
             value={fields.passwordTitle}
             onChange={handleFieldChange}
             fullWidth
@@ -200,25 +220,6 @@ function Edit() {
               disabled={!isUnlocked}
             >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
           </Stack>
-          <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
-            <Stack spacing={2} direction="row" alignItems="center">
-              <TextField
-                error={decryptError}
-                label="Secret"
-                variant="outlined"
-                type="password"
-                name="accountSecret"
-                value={fields.accountSecret}
-                onChange={handleFieldChange}
-                fullWidth
-              />
-              <Button
-                onClick={handleUnlockButton}
-                variant="outlined"
-                disabled={isUnlocked}
-              >Unlock</Button>
-            </Stack>
-          </Box>
           <TextField
             label="Last Changed"
             variant="outlined"

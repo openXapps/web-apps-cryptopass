@@ -36,9 +36,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      width: '12ch',
+      width: '10ch',
       '&:focus': {
-        width: '20ch',
+        width: '16ch',
       },
     },
   },
@@ -52,6 +52,7 @@ export default function SearchField(props) {
       </SearchIconWrapper>
       <StyledInputBase
         placeholder="Search…"
+        type="search"
         inputProps={{ 'aria-label': 'search' }}
         value={props.searchFieldValue}
         onChange={props.handleSeachFieldChange}

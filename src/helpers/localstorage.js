@@ -1,4 +1,4 @@
-import { cryptopassPasswords, cryptopassSettings, storageItems } from '../config/defaults';
+import { cryptopassSettings, storageItems } from '../config/defaults';
 
 /**
  * Overwrite item to local storage
@@ -37,17 +37,27 @@ export const getSettings = () => {
 
 /**
  * Get PASSWORDS from local storage
+ * @param {string} search Optional string value to filter on
  * @returns Returns an object {statusOk: boolean, data: any}
  */
-export const getPasswords = () => {
-  let response = { statusOK: false, data: cryptopassPasswords };
+export const getPasswords = (search) => {
+  let response = { statusOK: false, data: [] };
   try {
     const passwords = JSON.parse(localStorage.getItem(storageItems.passwords));
     if (passwords) {
-      response = {
-        statusOK: true,
-        data: passwords.sort((a, b) => (a.lastUsed < b.lastUsed) ? 1 : -1)
-      };
+      if (search) {
+        response = {
+          statusOK: true,
+          data: passwords.filter((v) => {
+            return (v.passwordTitle.toLowerCase().indexOf(search.toLowerCase()) > -1);
+          })
+        }
+      } else {
+        response = {
+          statusOK: true,
+          data: passwords.sort((a, b) => (a.lastUsed < b.lastUsed) ? 1 : -1)
+        };
+      }
     } else {
       throw new Error('No items found in localStorage');
     }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Container from '@mui/material/Container';
@@ -13,6 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import PasswordCard from '../components/PasswordCard';
+import { AppContext } from '../context/AppStore';
 import { dateToString, decryptCipher, copyToClipboard } from '../helpers/utilities';
 import { getPasswords, getPasswordById, updateLastClicked } from '../helpers/localstorage';
 
@@ -31,6 +32,7 @@ function Home() {
   const rrNavidate = useNavigate();
   // https://stackoverflow.com/questions/59647940/how-can-i-use-ref-in-textfield
   const secretEl = useRef(null);
+  const [appState,] = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [account, setAccount] = useState(initialAccount);
   const [password, setPassword] = useState(initialPassword);
@@ -41,7 +43,13 @@ function Home() {
   const [decryptError, setDecryptError] = useState(false);
 
   // Create a memorized password list
-  const memorizedPasswords = useMemo(() => getPasswords().data, []);
+  const memorizedPasswords = useMemo(() => {
+    return (
+      appState.searchString.length > 2 ? (
+        getPasswords(appState.searchString).data
+      ) : (getPasswords().data)
+    );
+  }, [appState.searchString]);
 
   // Manage passwords state
   useEffect(() => {
