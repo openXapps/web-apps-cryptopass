@@ -67,3 +67,20 @@ export const encryptString = (value, secret) => {
   return CryptoJs.AES.encrypt(value, secret).toString();
 };
 
+/**
+ * Helper function to validate string of passwords for upload
+ * @param {string} value String value of passwords to validate
+ * @returns JavaScript object of validated passwords
+ */
+export const validateImportString = (value) => {
+  let response = { ok: false, result: [], message: '' };
+
+  try {
+    response.result = JSON.parse(value);
+    response.ok = true;
+  } catch (error) {
+    response.message = error.message;
+  }
+
+  return response;
+};

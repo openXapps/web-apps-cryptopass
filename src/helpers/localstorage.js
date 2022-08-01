@@ -164,10 +164,10 @@ export const getPasswordById = (passwordId) => {
 
 /**
  * Get DOWNLOADABLE data from storage
+ * @returns String of downloadable data
  */
 export const getDownloadableData = () => {
   let data = '{\n"passwords":\n';
-  data += ',\n"passwords":\n';
   data += stringPop(JSON.stringify(getPasswords().data));
   data += '\n}';
   return data;
@@ -181,6 +181,7 @@ function stringPop(data) {
   let result = data;
   result = result.replace('[', '[\n');
   result = result.replace(']', '\n]');
+  result = result.replace(/","/g, '",\n"');
   result = result.replace(/},{/g, '},\n{');
   return result;
 }

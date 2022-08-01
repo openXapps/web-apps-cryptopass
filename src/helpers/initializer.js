@@ -17,4 +17,10 @@ export const initialUse = () => {
   if (!passwords.statusOK) {
     saveLocalStorage(storageItems.passwords, cryptopassPasswords);
   }
+
+  // Bump version
+  if (settings.statusOK && settings.data.version.indexOf(cryptopassSettings.version) === -1) {
+    saveLocalStorage(storageItems.settings, { ...settings.data, version: cryptopassSettings.version });
+  }
+
 };

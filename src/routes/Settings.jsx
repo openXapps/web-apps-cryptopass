@@ -48,6 +48,7 @@ const Settings = () => {
           <Typography>Dark Mode</Typography>
           <Switch checked={state.themeIsDark} onChange={handleTheme} />
         </Stack>
+        <Typography sx={{ mt: 2, color: 'warning.main' }}>Setting options below is for future use!</Typography>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mt={2}>
           <Typography>Confirm On Delete</Typography>
           <Switch checked={_confirmOnDelete} onChange={handleConfirmOnDelete} />
