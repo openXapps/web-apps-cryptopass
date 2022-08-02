@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import Toolbar from '@mui/material/Toolbar';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
-// import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -25,7 +24,6 @@ const Settings = () => {
   // Managed by state and persistence
   const handleTheme = () => {
     const _isDark = !state.themeIsDark;
-    // const _template = _isDark ? 'dark' : 'light';
     saveLocalStorage(storageItems.settings, { ...settings, themeIsDark: _isDark });
     dispatch({ type: 'THEME', payload: _isDark });
   };
@@ -58,11 +56,11 @@ const Settings = () => {
           <Typography>Densify Password List</Typography>
           <Switch checked={_dencifyPasswordList} onChange={handleDencifyPasswordList} />
         </Stack>
-        <Typography sx={{ mt: 2, color: 'warning.main' }}>Setting options below is for future use!</Typography>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mt={2}>
           <Typography>Confirm On Delete</Typography>
           <Switch checked={_confirmOnDelete} onChange={handleConfirmOnDelete} />
         </Stack>
+        <Typography sx={{ mt: 2, color: 'warning.main' }}>Options below is for future use!</Typography>
         <Stack spacing={2} direction="row" alignItems="center" pr={1} my={2} mr={2}>
           <Typography sx={{ mr: 3 }}>Password Length</Typography>
           <Slider

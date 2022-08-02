@@ -125,7 +125,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <>
       <Container maxWidth="md">
         <Toolbar />
         <Box mt={2}>
@@ -173,7 +173,7 @@ function Home() {
           <Button onClick={handleDialogClose} fullWidth variant="outlined">Close</Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 }
 

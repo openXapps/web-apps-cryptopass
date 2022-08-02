@@ -67,7 +67,7 @@ function Header() {
   return (
     <AppBar color="inherit">
       <Container maxWidth="md" disableGutters>
-        <Toolbar disableGutters>
+        <Toolbar >
           <Box mr={1}>
             <IconButton
               aria-label="home button"
@@ -82,7 +82,7 @@ function Header() {
           )}
           </Typography>
           {rrLocation.pathname === '/' ? (
-            <Box display="flex" flexDirection="row" columnGap={0.5}>
+            <Box display="flex" flexDirection="row">
               {!smallScreen && (
                 <SearchField
                   searchFieldValue={appState.searchString}
@@ -98,7 +98,6 @@ function Header() {
                 onClick={() => { rrNavigate('/settings') }}
               ><SettingsIcon /></IconButton>
               <IconButton
-                sx={{ mr: { sm: 0.5 } }}
                 color="inherit"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"

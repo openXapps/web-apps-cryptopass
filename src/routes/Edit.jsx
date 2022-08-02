@@ -11,6 +11,10 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
@@ -18,7 +22,8 @@ import {
   getPasswordById,
   updatePassword,
   addPassword,
-  deletePassword
+  deletePassword,
+  getSettings
 } from '../helpers/localstorage';
 import { dateToString, decryptCipher, encryptString } from '../helpers/utilities';
 
@@ -40,6 +45,7 @@ function Edit() {
   const { passwordId } = useParams();
   const [mode, setMode] = useState('');
   const [header, setHeader] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [fields, setFields] = useState(initialFieldData);
   const [showPassword, setShowPassword] = useState(false);
   const [decryptError, setDecryptError] = useState(false);
@@ -146,117 +152,143 @@ function Edit() {
     }
   };
 
+  const deletePasswordAction = () => {
+    deletePassword(passwordId);
+    setFields({ ...initialFieldData, passwordId: uuidv1() });
+    setIsUnlocked(true);
+    setTimeout(() => {
+      rrNavigate('/edit/new', { replace: true });
+    }, 800);
+  };
+
   const handleDeleteButton = (e) => {
     // ToDo: need to implement confirmation dialog
     if (mode === 'EDIT' && passwordId) {
-      deletePassword(passwordId);
-      setFields({ ...initialFieldData, passwordId: uuidv1() });
-      setIsUnlocked(true);
-      setTimeout(() => {
-        rrNavigate('/edit/new', { replace: true });
-      }, 800);
+      if (getSettings().data.confirmOnDelete) {
+        setDialogOpen(true);
+      } else {
+        deletePasswordAction();
+      }
     }
   };
 
+  const handleDeleteYesButton = () => {
+    setDialogOpen(false);
+    deletePasswordAction();
+  };
+
   return (
-    <Container maxWidth="sm">
-      <Toolbar />
-      <Typography variant="h6" sx={{ mt: 2 }}>{header}</Typography>
-      <Paper sx={{ mt: 2, p: 2 }}>
-        <Stack spacing={2}>
-          <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
-            <Stack spacing={2} direction="row" alignItems="center">
-              <TextField
-                error={decryptError}
-                label="Secret"
-                variant="outlined"
-                type="password"
-                name="accountSecret"
-                value={fields.accountSecret}
-                onChange={handleFieldChange}
-                fullWidth
-              />
-              <Button
-                onClick={handleUnlockButton}
-                variant="outlined"
-                disabled={isUnlocked}
-              >Unlock</Button>
-            </Stack>
-          </Box>
-          <TextField
-            label="Title"
-            variant="outlined"
-            name="passwordTitle"
-            autoComplete="off"
-            disabled={!isUnlocked}
-            value={fields.passwordTitle}
-            onChange={handleFieldChange}
-            fullWidth
-          />
-          <TextField
-            label="Account"
-            variant="outlined"
-            name="accountName"
-            autoComplete="off"
-            disabled={!isUnlocked}
-            value={fields.accountName}
-            onChange={handleFieldChange}
-            fullWidth
-          />
-          <Stack spacing={2} direction="row" alignItems="center">
+    <>
+      <Container maxWidth="sm">
+        <Toolbar />
+        <Typography variant="h6" sx={{ mt: 2 }}>{header}</Typography>
+        <Paper sx={{ mt: 2, p: 2 }}>
+          <Stack spacing={2}>
+            <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
+              <Stack spacing={2} direction="row" alignItems="center">
+                <TextField
+                  error={decryptError}
+                  label="Secret"
+                  variant="outlined"
+                  type="password"
+                  name="accountSecret"
+                  value={fields.accountSecret}
+                  onChange={handleFieldChange}
+                  fullWidth
+                />
+                <Button
+                  onClick={handleUnlockButton}
+                  variant="outlined"
+                  disabled={isUnlocked}
+                >Unlock</Button>
+              </Stack>
+            </Box>
             <TextField
-              label="Password"
+              label="Title"
               variant="outlined"
-              name="accountPassword"
-              type={showPassword ? 'text' : 'password'}
+              name="passwordTitle"
               autoComplete="off"
               disabled={!isUnlocked}
-              value={fields.accountPassword}
+              value={fields.passwordTitle}
               onChange={handleFieldChange}
               fullWidth
             />
-            <IconButton
-              onClick={() => setShowPassword(!showPassword)}
+            <TextField
+              label="Account"
+              variant="outlined"
+              name="accountName"
+              autoComplete="off"
               disabled={!isUnlocked}
-            >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+              value={fields.accountName}
+              onChange={handleFieldChange}
+              fullWidth
+            />
+            <Stack spacing={2} direction="row" alignItems="center">
+              <TextField
+                label="Password"
+                variant="outlined"
+                name="accountPassword"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="off"
+                disabled={!isUnlocked}
+                value={fields.accountPassword}
+                onChange={handleFieldChange}
+                fullWidth
+              />
+              <IconButton
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={!isUnlocked}
+              >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+            </Stack>
+            <TextField
+              label="Last Changed"
+              variant="outlined"
+              value={dateToString(fields.lastChanged, true)}
+              disabled
+              fullWidth
+            />
+            <TextField
+              label="Last Used"
+              variant="outlined"
+              value={dateToString(fields.lastUsed, true)}
+              disabled
+              fullWidth
+            />
           </Stack>
-          <TextField
-            label="Last Changed"
-            variant="outlined"
-            value={dateToString(fields.lastChanged, true)}
-            disabled
-            fullWidth
-          />
-          <TextField
-            label="Last Used"
-            variant="outlined"
-            value={dateToString(fields.lastUsed, true)}
-            disabled
-            fullWidth
-          />
-        </Stack>
-        <Stack mt={2} direction="row" spacing={2}>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={handleSaveButton}
-            disabled={isSaved}
-          >Save</Button>
-          <Button
-            color="warning"
-            variant="outlined"
-            fullWidth
-            onClick={handleDeleteButton}
-            disabled={mode === 'NEW'}
-          >Delete</Button>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => rrNavigate(-1)}
-          >Back</Button>
-        </Stack>
-      </Paper>
-    </Container>
+          <Stack mt={2} direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={handleSaveButton}
+              disabled={isSaved}
+            >Save</Button>
+            <Button
+              color="warning"
+              variant="outlined"
+              fullWidth
+              onClick={handleDeleteButton}
+              disabled={mode === 'NEW'}
+            >Delete</Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => rrNavigate(-1)}
+            >Back</Button>
+          </Stack>
+        </Paper>
+      </Container>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} aria-labelledby="alert-dialog-title">
+        <DialogTitle id="alert-dialog-title" textAlign="center">Delete Confirmation</DialogTitle>
+        <DialogContent>
+          <Typography>Password record will be permanently deleted. Are you sure?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteYesButton} fullWidth variant="outlined">Yes</Button>
+          <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">No</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 

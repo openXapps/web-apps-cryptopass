@@ -19,6 +19,7 @@ function Upload() {
   const [passwordsObject, setPasswordsObject] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const handleValidationButton = () => {
     const validation = validateImportString(passwordsString);
@@ -26,8 +27,10 @@ function Upload() {
       setIsValid(true);
       setIsSaved(false);
       setPasswordsObject(validation.result.passwords);
+      if (isError) setIsError(false);
     } else {
       console.log('Upload: validation error...', validation.message);
+      if (!isError) setIsError(true);
     }
   };
 
@@ -56,6 +59,7 @@ function Upload() {
             fullWidth
             onClick={handleValidationButton}
             disabled={isValid}
+            color={isError ? 'error' : 'primary'}
           >{isValid ? 'Validated' : 'Validate'}</Button>
           <Button
             variant="outlined"
