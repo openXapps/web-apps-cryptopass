@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import SettingsIcon from '@mui/icons-material/Settings';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 function PasswordCard(props) {
   const isActive = props.passwordId === props.passwordIdUnlocked;
@@ -22,17 +22,19 @@ function PasswordCard(props) {
             <IconButton
               onClick={props.handlePasswordSettings}
               data-id={props.passwordId}
-            ><SettingsIcon /></IconButton>
+            ><MoreVertIcon /></IconButton>
           }
         />
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={5}><Typography>Last Unlocked</Typography></Grid>
-            <Grid item xs={7}><Typography textAlign="right">{props.lastUsed}</Typography></Grid>
-            <Grid item xs={5}><Typography>Last Changed</Typography></Grid>
-            <Grid item xs={7}><Typography textAlign="right">{props.lastChanged}</Typography></Grid>
-          </Grid>
-        </CardContent>
+        {props.passwordListIsDense ? null : (
+          <CardContent>
+            <Grid container spacing={2}>
+              <Grid item xs={5}><Typography>Last Unlocked</Typography></Grid>
+              <Grid item xs={7}><Typography textAlign="right">{props.lastUsed}</Typography></Grid>
+              <Grid item xs={5}><Typography>Last Changed</Typography></Grid>
+              <Grid item xs={7}><Typography textAlign="right">{props.lastChanged}</Typography></Grid>
+            </Grid>
+          </CardContent>
+        )}
         <CardActions>
           {!isActive ? (
             <Button

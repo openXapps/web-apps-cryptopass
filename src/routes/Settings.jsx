@@ -19,6 +19,7 @@ const Settings = () => {
   const rrNavigate = useNavigate();
   const [state, dispatch] = useContext(AppContext);
   const settings = getSettings().data;
+  const [_dencifyPasswordList, setDencifyPasswordList] = useState(settings.passwordListIsDense);
   const [_confirmOnDelete, setConfirmOnDelete] = useState(settings.confirmOnDelete);
 
   // Managed by state and persistence
@@ -27,6 +28,11 @@ const Settings = () => {
     // const _template = _isDark ? 'dark' : 'light';
     saveLocalStorage(storageItems.settings, { ...settings, themeIsDark: _isDark });
     dispatch({ type: 'THEME', payload: _isDark });
+  };
+
+  const handleDencifyPasswordList = () => {
+    saveLocalStorage(storageItems.settings, { ...settings, passwordListIsDense: !_dencifyPasswordList });
+    setDencifyPasswordList(!_dencifyPasswordList);
   };
 
   // Managed by persistence only
@@ -47,6 +53,10 @@ const Settings = () => {
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
           <Typography>Dark Mode</Typography>
           <Switch checked={state.themeIsDark} onChange={handleTheme} />
+        </Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mt={2}>
+          <Typography>Densify Password List</Typography>
+          <Switch checked={_dencifyPasswordList} onChange={handleDencifyPasswordList} />
         </Stack>
         <Typography sx={{ mt: 2, color: 'warning.main' }}>Setting options below is for future use!</Typography>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mt={2}>

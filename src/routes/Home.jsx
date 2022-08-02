@@ -15,7 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import PasswordCard from '../components/PasswordCard';
 import { AppContext } from '../context/AppStore';
 import { dateToString, decryptCipher, copyToClipboard } from '../helpers/utilities';
-import { getPasswords, getPasswordById, updateLastClicked } from '../helpers/localstorage';
+import { getPasswords, getPasswordById, updateLastClicked, getSettings } from '../helpers/localstorage';
 
 const initialPassword = {
   passwordId: '',
@@ -139,6 +139,7 @@ function Home() {
                   lastUsed={dateToString(v.lastUsed, true)}
                   lastChanged={dateToString(v.lastChanged, true)}
                   passwordIdUnlocked={passwordIdUnlocked}
+                  passwordListIsDense={getSettings().data.passwordListIsDense}
                   handleCopyUserName={handleCopyUserName}
                   handleCopyPassword={handleCopyPassword}
                   handlePasswordSettings={handlePasswordSettings}
