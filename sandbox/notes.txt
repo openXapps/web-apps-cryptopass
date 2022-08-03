@@ -1,7 +1,2 @@
-Columns for local storage
-
-id
-name
-accountCipher
-passwordCipher
-modified
+Save to file
+https://github.com/eligrey/FileSaver.js
