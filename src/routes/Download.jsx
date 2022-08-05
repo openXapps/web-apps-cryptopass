@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 
+import { useMediaQuery } from '@mui/material';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -15,9 +16,16 @@ import { copyToClipboard } from '../helpers/utilities';
 
 function Download() {
   const rrNavigate = useNavigate();
+  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  const [spacing, setSpacing] = useState(smallScreen ? 1 : 2);
   const [isCopied, setIsCopied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const passwords = getDownloadableData();
+
+  useEffect(() => {
+    setSpacing(smallScreen ? 1 : 2);
+    return () => true;
+  }, [smallScreen]);
 
   const handleCopyButton = () => {
     copyToClipboard(passwords).finally(() => {
@@ -34,9 +42,10 @@ function Download() {
   return (
     <Container maxWidth="sm">
       <Toolbar />
-      <Typography variant="h6" sx={{ mt: 2 }}>Backup My Passwords</Typography>
-      <Paper sx={{ mt: 2, p: 2 }}>
+      <Typography variant="h6" sx={{ mt: spacing }}>Backup My Passwords</Typography>
+      <Paper sx={{ mt: spacing, p: spacing }}>
         <TextField
+          sx={{mt: 1}}
           label="Password Data"
           multiline
           fullWidth
@@ -44,7 +53,7 @@ function Download() {
           value={passwords}
           disabled
         />
-        <Stack mt={2} direction="row" spacing={2}>
+        <Stack mt={spacing} direction="row" spacing={spacing}>
           <Button
             variant="outlined"
             fullWidth

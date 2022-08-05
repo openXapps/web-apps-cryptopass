@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useMediaQuery } from '@mui/material';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -8,18 +9,28 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import LinearProgress from '@mui/material/LinearProgress';
 
+import LoadFileButton from '../components/LoadFileButton';
 import { saveLocalStorage } from '../helpers/localstorage';
 import { storageItems } from '../config/defaults';
 import { validateImportString } from '../helpers/utilities';
 
 function Upload() {
   const rrNavigate = useNavigate();
+  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  const [spacing, setSpacing] = useState(smallScreen ? 1 : 2);
   const [passwordsString, setPasswordsString] = useState('');
   const [passwordsObject, setPasswordsObject] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setSpacing(smallScreen ? 1 : 2);
+    return () => true;
+  }, [smallScreen]);
 
   const handleValidationButton = () => {
     const validation = validateImportString(passwordsString);
@@ -39,21 +50,48 @@ function Upload() {
     setIsSaved(true);
   };
 
+  const handleLoadFileInput = (e) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      // console.log(e.target.result);
+      setPasswordsString(e.target.result);
+      // console.log(new Date());
+      setIsLoading(false);
+    };
+    // console.log(new Date());
+    setIsLoading(true);
+    reader.readAsText(e.target.files[0])
+  };
+
+  const handleLoadFileReset = () => {
+    if (isError) setIsError(false);
+    if (isValid) setIsValid(false);
+    if (isSaved) setIsSaved(false);
+  }
+
   return (
     <Container maxWidth="sm">
       <Toolbar />
-      <Typography variant="h6" sx={{ mt: 2 }}>Restore My Passwords</Typography>
-      <Paper sx={{ mt: 2, p: 2 }}>
+      {isLoading && <LinearProgress />}
+      <Typography variant="h6" sx={{ mt: spacing }}>Restore My Passwords</Typography>
+      <Paper sx={{ mt: spacing, p: spacing }}>
         <TextField
+          sx={{ mt: 1 }}
           label="Password Data"
           multiline
           fullWidth
-          rows={16}
+          rows={smallScreen ? 13 : 16}
           value={passwordsString}
           disabled={isValid}
           onChange={(e) => setPasswordsString(e.currentTarget.value)}
         />
-        <Stack mt={2} direction="row" spacing={2}>
+        <Stack mt={2} direction={smallScreen ? 'column' : 'row'} spacing={spacing}>
+          <LoadFileButton
+            handleLoadFileInput={handleLoadFileInput}
+            handleLoadFileReset={handleLoadFileReset}
+            buttonLabel={isLoading ? 'Loading' : 'Open File'}
+            isLoading={isLoading}
+          />
           <Button
             variant="outlined"
             fullWidth

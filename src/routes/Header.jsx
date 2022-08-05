@@ -113,8 +113,8 @@ function Header() {
                 onClose={handleMenuClose}
               >
                 <MenuItem onClick={handleRoute} data-name='settings'>Settings</MenuItem>
-                <MenuItem onClick={handleRoute} data-name='download'>Backup my Data</MenuItem>
-                <MenuItem onClick={handleRoute} data-name='upload'>Restore my Backups</MenuItem>
+                <MenuItem onClick={handleRoute} data-name='download'>Backup Passwords</MenuItem>
+                <MenuItem onClick={handleRoute} data-name='upload'>Restore Passwords</MenuItem>
               </Menu>
             </Box>
           ) : (null)}
