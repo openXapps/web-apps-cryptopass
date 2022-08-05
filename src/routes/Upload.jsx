@@ -12,14 +12,23 @@ import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import LoadFileButton from '../components/LoadFileButton';
+import useFileReader from '../hooks/useFileReader';
 import { saveLocalStorage } from '../helpers/localstorage';
 import { storageItems } from '../config/defaults';
 import { validateImportString } from '../helpers/utilities';
+
+function readerOnLoad(e) {
+  // console.log(new Date());
+  // console.log(e);
+  // console.log(e.target.result);
+  return e.currentTarget.result;
+}
 
 function Upload() {
   const rrNavigate = useNavigate();
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [spacing, setSpacing] = useState(smallScreen ? 1 : 2);
+  const [{ frResult, frError, frFile, frLoading }, setFrFile] = useFileReader({frMethod: 'readAsText', rfOnload: readerOnLoad});
   const [passwordsString, setPasswordsString] = useState('');
   const [passwordsObject, setPasswordsObject] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -50,23 +59,29 @@ function Upload() {
     setIsSaved(true);
   };
 
+  // function readerOnLoad(e) {
+  //   console.log(new Date());
+  //   console.log(e);
+    // console.log(e.target.result);
+  //   setPasswordsString(e.currentTarget.result);
+  //   setIsLoading(false);
+  //   e.removeEventListener();
+  // }
+  
   const handleLoadFileInput = (e) => {
     const reader = new FileReader()
-    reader.onload = (e) => {
-      // console.log(e.target.result);
-      setPasswordsString(e.target.result);
-      // console.log(new Date());
-      setIsLoading(false);
-    };
-    // console.log(new Date());
+    reader.onload = readerOnLoad;
+    console.log(new Date());
     setIsLoading(true);
-    reader.readAsText(e.target.files[0])
+    reader.readAsText(e.currentTarget.files[0]);
+    console.log('reader.DONE...', reader.DONE);
   };
 
   const handleLoadFileReset = () => {
+    setPasswordsString('');
     if (isError) setIsError(false);
     if (isValid) setIsValid(false);
-    if (isSaved) setIsSaved(false);
+    if (!isSaved) setIsSaved(true);
   }
 
   return (
