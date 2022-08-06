@@ -19,7 +19,7 @@ function LoadFileButton(props) {
           sx={{ whiteSpace: 'nowrap' }}
           variant="outlined"
           component="span"
-          disabled={props.isLoading}
+          disabled={props.isLoading || props.disabled}
           fullWidth
           onClick={props.handleLoadFileReset}
         >{props.buttonLabel}</Button>

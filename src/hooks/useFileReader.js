@@ -1,23 +1,22 @@
 import { useEffect, useState } from 'react';
 
-// const noop = () => { };
-
 /**
- * Custom React Hook to read a file
- * @param {any} options Option are {frMethod: string, rfOnload: callback}
- * @returns Hook state as [{ frResult, frError, frFile, frLoading }, setFrFile]
+ * Custom React Hook to read a file with FileReader
+ * @param {string} frMethod File read method for FileReader
+ * @returns Hook state as [{ frResult, frError, frLoading, frLoaded }, setFrFile]
  */
-function useFileReader(options) {
-  const { frMethod, rfOnload } = options;
+function useFileReader(frMethod) {
   const [frFile, setFrFile] = useState(null);
   const [frError, setFrError] = useState('');
   const [frResult, setFrResult] = useState('');
   const [frLoading, setFrLoading] = useState(false);
+  const [frLoaded, setFrLoaded] = useState(false);
 
   useEffect(() => {
     if (!frFile) return;
 
     const reader = new FileReader(frFile);
+
     reader.onloadstart = () => {
       setFrLoading(true);
     }
@@ -27,8 +26,8 @@ function useFileReader(options) {
     }
 
     reader.onload = e => {
-      setFrResult(e.target.frResult);
-      rfOnload(e.target.frResult);
+      setFrResult(e.target.result);
+      setFrLoaded(true);
     }
 
     reader.onError = e => {
@@ -37,18 +36,15 @@ function useFileReader(options) {
 
     try {
       reader[frMethod](frFile)
-    } catch (e) {
-      setFrError(e);
+    } catch (error) {
+      setFrError(error);
     }
 
-    return () => {
-      if (reader instanceof FileReader) {
-        reader.removeEventListener('load', onload);
-      }
-    }
-  }, [frFile]);
+    return () => true;
 
-  return [{ frResult, frError, frFile, frLoading }, setFrFile];
+  }, [frFile, frMethod]);
+
+  return [{ frResult, frError, frLoading, frLoaded }, setFrFile];
 }
 
 export default useFileReader;

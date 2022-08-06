@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { useMediaQuery } from '@mui/material';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import LoadFileButton from '../components/LoadFileButton';
 import useFileReader from '../hooks/useFileReader';
@@ -17,29 +18,34 @@ import { saveLocalStorage } from '../helpers/localstorage';
 import { storageItems } from '../config/defaults';
 import { validateImportString } from '../helpers/utilities';
 
-function readerOnLoad(e) {
-  // console.log(new Date());
-  // console.log(e);
-  // console.log(e.target.result);
-  return e.currentTarget.result;
-}
+// function readerOnLoad(e) {
+// console.log(new Date());
+// console.log(e);
+// console.log(e.target.result);
+// return e.currentTarget.result;
+// }
 
 function Upload() {
   const rrNavigate = useNavigate();
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [spacing, setSpacing] = useState(smallScreen ? 1 : 2);
-  const [{ frResult, frError, frFile, frLoading }, setFrFile] = useFileReader({frMethod: 'readAsText', rfOnload: readerOnLoad});
+  const [{ frResult, frError, frLoading, frLoaded }, setFrFile] = useFileReader('readAsText');
   const [passwordsString, setPasswordsString] = useState('');
   const [passwordsObject, setPasswordsObject] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setSpacing(smallScreen ? 1 : 2);
     return () => true;
   }, [smallScreen]);
+
+  useEffect(() => {
+    setPasswordsString(frResult);
+    return () => true;
+  }, [frResult]);
 
   const handleValidationButton = () => {
     const validation = validateImportString(passwordsString);
@@ -47,10 +53,10 @@ function Upload() {
       setIsValid(true);
       setIsSaved(false);
       setPasswordsObject(validation.result.passwords);
-      if (isError) setIsError(false);
+      if (isError) setIsError(!isError);
     } else {
       console.log('Upload: validation error...', validation.message);
-      if (!isError) setIsError(true);
+      if (isError) setIsError(!isError);
     }
   };
 
@@ -59,36 +65,26 @@ function Upload() {
     setIsSaved(true);
   };
 
-  // function readerOnLoad(e) {
-  //   console.log(new Date());
-  //   console.log(e);
-    // console.log(e.target.result);
-  //   setPasswordsString(e.currentTarget.result);
-  //   setIsLoading(false);
-  //   e.removeEventListener();
-  // }
-  
   const handleLoadFileInput = (e) => {
-    const reader = new FileReader()
-    reader.onload = readerOnLoad;
-    console.log(new Date());
-    setIsLoading(true);
-    reader.readAsText(e.currentTarget.files[0]);
-    console.log('reader.DONE...', reader.DONE);
+    setFrFile(e.currentTarget.files[0]);
   };
 
   const handleLoadFileReset = () => {
     setPasswordsString('');
-    if (isError) setIsError(false);
-    if (isValid) setIsValid(false);
-    if (!isSaved) setIsSaved(true);
+    if (isError) setIsError(!isError);
+    if (isValid) setIsValid(!isValid);
+    if (!isSaved) setIsSaved(!isSaved);
   }
 
   return (
     <Container maxWidth="sm">
       <Toolbar />
-      {isLoading && <LinearProgress />}
-      <Typography variant="h6" sx={{ mt: spacing }}>Restore My Passwords</Typography>
+      <Box mt={spacing} mr={spacing}>
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+          <Typography variant="h6">Restore My Passwords</Typography>
+          {frLoading && <CircularProgress size={24} color="info" />}
+        </Stack>
+      </Box>
       <Paper sx={{ mt: spacing, p: spacing }}>
         <TextField
           sx={{ mt: 1 }}
@@ -104,8 +100,10 @@ function Upload() {
           <LoadFileButton
             handleLoadFileInput={handleLoadFileInput}
             handleLoadFileReset={handleLoadFileReset}
-            buttonLabel={isLoading ? 'Loading' : 'Open File'}
-            isLoading={isLoading}
+            buttonLabel={frLoading ? 'Loading' : 'Open File'}
+            isLoading={frLoading}
+            color={frError ? 'error' : 'primary'}
+            disabled={frLoaded}
           />
           <Button
             variant="outlined"
