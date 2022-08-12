@@ -14,7 +14,8 @@ export const storageItems = {
  */
 export const cryptopassSettings = {
   // Remember to update package.json with version
-  version: '0.1.3',
+  version: '0.1.4',
+  // version: '0.1.3',
   // version: '0.1.2',
   // version: '0.1.1',
   // version: '0.1.0',

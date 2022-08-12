@@ -8,44 +8,64 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 function PasswordCard(props) {
   const isActive = props.passwordId === props.passwordIdUnlocked;
+  const titleColor = isActive ? 'text.primary' : 'text.secondary';
+  const titleSize = props.smallScreen ? 'body1.fontSize' : props.passwordListIsDense ? 'h6' : 'body1.fontSize';
 
   return (
-    <Grid item xs={12} sm={6}>
+    <Grid item xs={12} sm={props.passwordListIsDense ? 12 : 6}>
       <Card elevation={5}>
         <CardHeader
           title={props.passwordTitle}
-          titleTypographyProps={isActive ? { color: 'text.primary' } : { color: 'text.secondary' }}
+          titleTypographyProps={{
+            color: titleColor,
+            fontSize: titleSize
+          }}
           action={
-            <IconButton
-              onClick={props.handlePasswordSettings}
-              data-id={props.passwordId}
-            ><MoreVertIcon /></IconButton>
+            <>
+              {isActive ? (
+                <IconButton
+                  onClick={props.handleLockButton}
+                  data-id={props.passwordId}
+                ><LockOpenIcon /></IconButton>
+              ) : (
+                <IconButton
+                  onClick={props.handleUnlockButton}
+                  data-id={props.passwordId}
+                ><LockIcon /></IconButton>
+              )}
+              <IconButton
+                onClick={props.handlePasswordSettings}
+                data-id={props.passwordId}
+              ><MoreVertIcon /></IconButton>
+            </>
           }
         />
         {props.passwordListIsDense ? null : (
           <CardContent>
             <Grid container spacing={2}>
-              <Grid item xs={5}><Typography>Last Unlocked</Typography></Grid>
-              <Grid item xs={7}><Typography textAlign="right">{props.lastUsed}</Typography></Grid>
-              <Grid item xs={5}><Typography>Last Changed</Typography></Grid>
-              <Grid item xs={7}><Typography textAlign="right">{props.lastChanged}</Typography></Grid>
+              <Grid item xs={5}><Typography variant="body2">Last Unlocked</Typography></Grid>
+              <Grid item xs={7}><Typography variant="body2" textAlign="right">{props.lastUsed}</Typography></Grid>
+              <Grid item xs={5}><Typography variant="body2">Last Changed</Typography></Grid>
+              <Grid item xs={7}><Typography variant="body2" textAlign="right">{props.lastChanged}</Typography></Grid>
             </Grid>
           </CardContent>
         )}
-        <CardActions>
-          {!isActive ? (
-            <Button
-              sx={{ mb: 1, mx: 1 }}
-              size="small"
-              fullWidth
-              variant="outlined"
-              onClick={props.handleUnlockButton}
-              data-id={props.passwordId}
-            >Unlock Password</Button>
-          ) : (
+        {!isActive ? (null
+          // <Button
+          //   sx={{ mb: 1, mx: 1 }}
+          //   size="small"
+          //   fullWidth
+          //   variant="outlined"
+          //   onClick={props.handleUnlockButton}
+          //   data-id={props.passwordId}
+          // >Unlock Password</Button>
+        ) : (
+          <CardActions>
             <Stack
               spacing={{ xs: 1, md: 2 }}
               direction="row"
@@ -71,8 +91,8 @@ function PasswordCard(props) {
                 data-id={props.passwordId}
               >Copy Password</Button>
             </Stack>
-          )}
-        </CardActions>
+          </CardActions>
+        )}
       </Card>
     </Grid >
   );

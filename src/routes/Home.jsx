@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
@@ -32,6 +33,7 @@ function Home() {
   const rrNavidate = useNavigate();
   // https://stackoverflow.com/questions/59647940/how-can-i-use-ref-in-textfield
   const secretEl = useRef(null);
+  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [appState,] = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [account, setAccount] = useState(initialAccount);
@@ -88,6 +90,13 @@ function Home() {
     copyToClipboard(account.password);
   };
 
+  const handleLockButton = () => {
+    setPassword(initialPassword);
+    setAccount(initialAccount);
+    setPasswordIdUnlocked('');
+    setPasswordIdToBeUnlocked('');
+  };
+
   const handleUnlockButton = (e) => {
     setPassword(getPasswordById(e.currentTarget.dataset.id).data[0]);
     setPasswordIdToBeUnlocked(e.currentTarget.dataset.id);
@@ -138,12 +147,14 @@ function Home() {
                   passwordTitle={v.passwordTitle}
                   lastUsed={dateToString(v.lastUsed, true)}
                   lastChanged={dateToString(v.lastChanged, true)}
+                  smallScreen={smallScreen}
                   passwordIdUnlocked={passwordIdUnlocked}
                   passwordListIsDense={getSettings().data.passwordListIsDense}
                   handleCopyUserName={handleCopyUserName}
                   handleCopyPassword={handleCopyPassword}
                   handlePasswordSettings={handlePasswordSettings}
                   handleUnlockButton={handleUnlockButton}
+                  handleLockButton={handleLockButton}
                 />
               );
             })}
