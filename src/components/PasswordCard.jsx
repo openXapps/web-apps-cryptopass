@@ -14,10 +14,11 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 function PasswordCard(props) {
   const isActive = props.passwordId === props.passwordIdUnlocked;
   const titleColor = isActive ? 'text.primary' : 'text.secondary';
-  const titleSize = props.smallScreen ? 'body1.fontSize' : props.passwordListIsDense ? 'h6' : 'body1.fontSize';
+  // const titleSize = props.smallScreen ? 'body1.fontSize' : props.passwordListIsDense ? 'h6' : '1.1rem';
+  const titleSize = props.passwordListIsDense ? (props.smallScreen ? 'body1.fontSize' : 'h6') : '1.1rem';
 
   return (
-    <Grid item xs={12} sm={props.passwordListIsDense ? 12 : 6}>
+    <Grid item xs={12} sm={12} md={props.passwordListIsDense ? 12 : 6}>
       <Card elevation={5}>
         <CardHeader
           title={props.passwordTitle}
