@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useId } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Toolbar from '@mui/material/Toolbar';
@@ -7,19 +7,25 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
-import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+// import Slider from '@mui/material/Slider';
 
 import { AppContext } from '../context/AppStore';
 import { saveLocalStorage, getSettings } from '../helpers/localstorage';
-import { storageItems, passwordLengthMarkers } from '../config/defaults';
+import { storageItems, sortOrders } from '../config/defaults';
 
 const Settings = () => {
   const rrNavigate = useNavigate();
+  const sortOrderId = useId();
   const [state, dispatch] = useContext(AppContext);
   const settings = getSettings().data;
   const [_dencifyPasswordList, setDencifyPasswordList] = useState(settings.passwordListIsDense);
   const [_confirmOnDelete, setConfirmOnDelete] = useState(settings.confirmOnDelete);
+  const [_sortOrder, setSortOrder] = useState(settings.sortOrder);
 
   // Managed by state and persistence
   const handleTheme = () => {
@@ -39,9 +45,15 @@ const Settings = () => {
     setConfirmOnDelete(!_confirmOnDelete);
   };
 
-  const handlePasswordLengthMarker = (event, value) => {
-    saveLocalStorage(storageItems.settings, { ...settings, passwordLengthMarker: value });
+  // Not working!!
+  const handleSortOrderChange = (e) => {
+    setSortOrder(e.target.value);
+    saveLocalStorage(storageItems.settings, { ...settings, sortorder: e.currentTarget.value });
   };
+
+  // const handlePasswordLengthMarker = (event, value) => {
+  //   saveLocalStorage(storageItems.settings, { ...settings, passwordLengthMarker: value });
+  // };
 
   return (
     <Container maxWidth="sm">
@@ -60,7 +72,16 @@ const Settings = () => {
           <Typography>Confirm On Delete</Typography>
           <Switch checked={_confirmOnDelete} onChange={handleConfirmOnDelete} />
         </Stack>
-        <Typography sx={{ mt: 2, color: 'warning.main' }}>Options below is for future use!</Typography>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mt={2}>
+          {/* <Typography>Sort Order</Typography> */}
+          <FormControl fullWidth>
+          <InputLabel id={sortOrderId}>Sort order</InputLabel>
+            <Select value={_sortOrder} onChange={handleSortOrderChange} labelId={sortOrderId} label="Sort Order">
+              {sortOrders.map((v, i) => <MenuItem key={i} value={v.value}>{v.label}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </Stack>
+        {/* <Typography sx={{ mt: 2, color: 'warning.main' }}>Options below is for future use!</Typography>
         <Stack spacing={2} direction="row" alignItems="center" pr={1} my={2} mr={2}>
           <Typography sx={{ mr: 3 }}>Password Length</Typography>
           <Slider
@@ -71,7 +92,7 @@ const Settings = () => {
             max={passwordLengthMarkers[passwordLengthMarkers.length - 1].value}
             onChangeCommitted={handlePasswordLengthMarker}
           />
-        </Stack>
+        </Stack> */}
         <Button
           sx={{ mt: 2 }}
           variant="outlined"

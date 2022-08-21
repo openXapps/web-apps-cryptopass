@@ -19,6 +19,16 @@ export const initialUse = () => {
     saveLocalStorage(storageItems.passwords, cryptopassPasswords);
   }
 
+  // Version 0.1.5 update
+  if (settings.statusOK && !settings.data.sortOrder && cryptopassSettings.version.indexOf('0.1.5') > -1) {
+    saveLocalStorage(storageItems.settings, {
+      ...settings.data,
+      version: cryptopassSettings.version,
+      sortOrder: cryptopassSettings.sortOrder
+    });
+    doVersionBump = false;
+  }
+
   // Version 0.1.1 to 0.1.2
   if (settings.statusOK && settings.data.version.indexOf('0.1.1') > -1 && cryptopassSettings.version.indexOf('0.1.2') > -1) {
     saveLocalStorage(storageItems.settings, {

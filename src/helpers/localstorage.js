@@ -42,6 +42,7 @@ export const getSettings = () => {
  */
 export const getPasswords = (search) => {
   let response = { statusOK: false, data: [] };
+  const sortOrder = getSettings().data.sortOrder;
   try {
     const passwords = JSON.parse(localStorage.getItem(storageItems.passwords));
     if (passwords) {
@@ -55,7 +56,9 @@ export const getPasswords = (search) => {
       } else {
         response = {
           statusOK: true,
-          data: passwords.sort((a, b) => (a.lastUsed < b.lastUsed) ? 1 : -1)
+          data: sortOrder === 10
+            ? passwords.sort((a, b) => (a.lastUsed < b.lastUsed) ? 1 : -1)
+            : passwords.sort((a, b) => (a.passwordTitle < b.passwordTitle) ? 1 : -1)
         };
       }
     } else {

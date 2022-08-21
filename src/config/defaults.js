@@ -14,7 +14,8 @@ export const storageItems = {
  */
 export const cryptopassSettings = {
   // Remember to update package.json with version
-  version: '0.1.4',
+  version: '0.1.5',
+  // version: '0.1.4',
   // version: '0.1.3',
   // version: '0.1.2',
   // version: '0.1.1',
@@ -23,7 +24,8 @@ export const cryptopassSettings = {
   themeIsDark: true,
   confirmOnDelete: true,
   passwordLengthMarker: 10,
-  passwordListIsDense: false
+  passwordListIsDense: false,
+  sortOrder: 10
 };
 
 /**
@@ -59,4 +61,10 @@ export const passwordLengthMarkers = [
   { value: 20, label: '20' },
   { value: 25, label: '25' },
   { value: 30, label: '30' },
+];
+
+// Sort order markers
+export const sortOrders = [
+  {value: 10, label: 'By Last Used'},
+  {value: 20, label: 'By Title'},
 ];
