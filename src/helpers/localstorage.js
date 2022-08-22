@@ -42,8 +42,9 @@ export const getSettings = () => {
  */
 export const getPasswords = (search) => {
   let response = { statusOK: false, data: [] };
-  const sortOrder = getSettings().data.sortOrder;
+  const sortOrderDefault = 10;
   try {
+    const sortOrder = Number(getSettings().data.sortOrder).valueOf();
     const passwords = JSON.parse(localStorage.getItem(storageItems.passwords));
     if (passwords) {
       if (search) {
@@ -51,14 +52,15 @@ export const getPasswords = (search) => {
           statusOK: true,
           data: passwords.filter((v) => {
             return (v.passwordTitle.toLowerCase().indexOf(search.toLowerCase()) > -1);
-          })
+          }).sort((a, b) => (b.passwordTitle < a.passwordTitle) ? 1 : -1)
         }
       } else {
+        // console.log(sortOrder, sortOrder === sortOrderDefault);
         response = {
           statusOK: true,
-          data: sortOrder === 10
+          data: sortOrder === sortOrderDefault
             ? passwords.sort((a, b) => (a.lastUsed < b.lastUsed) ? 1 : -1)
-            : passwords.sort((a, b) => (a.passwordTitle < b.passwordTitle) ? 1 : -1)
+            : passwords.sort((a, b) => (b.passwordTitle < a.passwordTitle) ? 1 : -1)
         };
       }
     } else {

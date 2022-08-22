@@ -27,7 +27,7 @@ const Settings = () => {
   const [_confirmOnDelete, setConfirmOnDelete] = useState(settings.confirmOnDelete);
   const [_sortOrder, setSortOrder] = useState(settings.sortOrder);
 
-  // Managed by state and persistence
+  // Managed state and persistence
   const handleTheme = () => {
     const _isDark = !state.themeIsDark;
     saveLocalStorage(storageItems.settings, { ...settings, themeIsDark: _isDark });
@@ -39,16 +39,14 @@ const Settings = () => {
     setDencifyPasswordList(!_dencifyPasswordList);
   };
 
-  // Managed by persistence only
   const handleConfirmOnDelete = () => {
     saveLocalStorage(storageItems.settings, { ...settings, confirmOnDelete: !_confirmOnDelete });
     setConfirmOnDelete(!_confirmOnDelete);
   };
 
-  // Not working!!
   const handleSortOrderChange = (e) => {
+    saveLocalStorage(storageItems.settings, { ...settings, sortOrder: Number(e.target.value) });
     setSortOrder(e.target.value);
-    saveLocalStorage(storageItems.settings, { ...settings, sortorder: e.currentTarget.value });
   };
 
   // const handlePasswordLengthMarker = (event, value) => {
@@ -72,15 +70,12 @@ const Settings = () => {
           <Typography>Confirm On Delete</Typography>
           <Switch checked={_confirmOnDelete} onChange={handleConfirmOnDelete} />
         </Stack>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} mt={2}>
-          {/* <Typography>Sort Order</Typography> */}
-          <FormControl fullWidth>
-          <InputLabel id={sortOrderId}>Sort order</InputLabel>
-            <Select value={_sortOrder} onChange={handleSortOrderChange} labelId={sortOrderId} label="Sort Order">
-              {sortOrders.map((v, i) => <MenuItem key={i} value={v.value}>{v.label}</MenuItem>)}
-            </Select>
-          </FormControl>
-        </Stack>
+        <FormControl fullWidth sx={{ mt:2 }}>
+          <InputLabel id={sortOrderId}>Sort Password List</InputLabel>
+          <Select value={_sortOrder} onChange={handleSortOrderChange} labelId={sortOrderId} label="Sort Password List">
+            {sortOrders.map((v, i) => <MenuItem key={i} value={v.value}>{v.label}</MenuItem>)}
+          </Select>
+        </FormControl>
         {/* <Typography sx={{ mt: 2, color: 'warning.main' }}>Options below is for future use!</Typography>
         <Stack spacing={2} direction="row" alignItems="center" pr={1} my={2} mr={2}>
           <Typography sx={{ mr: 3 }}>Password Length</Typography>
