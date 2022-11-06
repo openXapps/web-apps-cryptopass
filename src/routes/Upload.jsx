@@ -55,8 +55,8 @@ function Upload() {
       setPasswordsObject(validation.result.passwords);
       if (isError) setIsError(!isError);
     } else {
-      console.log('Upload: validation error...', validation.message);
-      if (isError) setIsError(!isError);
+      // console.log('Upload: validation error...', validation.message);
+      if (!isError) setIsError(!isError);
     }
   };
 
@@ -88,6 +88,7 @@ function Upload() {
       <Paper sx={{ mt: spacing, p: spacing }}>
         <TextField
           sx={{ mt: 1 }}
+          error={isError}
           label="Password Data"
           multiline
           fullWidth
@@ -95,6 +96,7 @@ function Upload() {
           value={passwordsString}
           disabled={isValid}
           onChange={(e) => setPasswordsString(e.currentTarget.value)}
+          spellCheck={false}
         />
         <Stack mt={2} direction={smallScreen ? 'column' : 'row'} spacing={spacing}>
           <LoadFileButton

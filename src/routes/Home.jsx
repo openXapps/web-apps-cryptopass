@@ -126,10 +126,13 @@ function Home() {
       } else {
         // console.log('Decryption failed');
         setDecryptError(true);
+        secretEl.current.focus();
+        setPasswordUnlockSecret('');
       }
     } else {
       // console.log('Invalid secret');
       setDecryptError(true);
+      secretEl.current.focus();
     }
   };
 
@@ -180,8 +183,8 @@ function Home() {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleUnlockConfirm} fullWidth variant="outlined">Unlock</Button>
           <Button onClick={handleDialogClose} fullWidth variant="outlined">Close</Button>
+          <Button onClick={handleUnlockConfirm} fullWidth variant="outlined">Unlock</Button>
         </DialogActions>
       </Dialog>
     </>
