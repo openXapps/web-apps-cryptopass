@@ -14,7 +14,7 @@ function LoadFileButton(props) {
         accept="application/json"
         onChange={props.handleLoadFileInput}
       />
-      <label htmlFor={inputId}>
+      <label htmlFor={inputId} style={{marginLeft: 0}}>
         <Button
           sx={{ whiteSpace: 'nowrap' }}
           variant="outlined"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { v1 as uuidv1 } from 'uuid';
 
@@ -42,6 +42,7 @@ const initialFieldData = {
 function Edit() {
   const rrNavigate = useNavigate();
   const rrPath = useLocation().pathname;
+  const secretEl = useRef(null);
   const { passwordId } = useParams();
   const [mode, setMode] = useState('');
   const [header, setHeader] = useState('');
@@ -75,6 +76,7 @@ function Edit() {
         });
       }
     }
+    secretEl.current.focus();
     return () => true;
   }, [rrPath, passwordId]);
 
@@ -110,13 +112,17 @@ function Edit() {
           setIsUnlocked(true);
         } else {
           // console.log('Decryption failed');
-          if (!decryptError) setDecryptError(true);
+          if (!decryptError) {
+            setDecryptError(true);
+            setFields({ ...fields, accountSecret: '' });
+            secretEl.current.focus();
+          }
           if (isUnlocked) setIsUnlocked(false);
         }
       } else {
-        // console.log('Invalid accountSecret');
         if (!decryptError) setDecryptError(true);
         if (isUnlocked) setIsUnlocked(false);
+        secretEl.current.focus();
       }
     }
   };
@@ -195,6 +201,7 @@ function Edit() {
                   value={fields.accountSecret}
                   onChange={handleFieldChange}
                   fullWidth
+                  inputRef={secretEl}
                 />
                 <Button
                   onClick={handleUnlockButton}
@@ -229,7 +236,8 @@ function Edit() {
                 variant="outlined"
                 name="accountPassword"
                 type={showPassword ? 'text' : 'password'}
-                autoComplete="off"
+                // https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#the_autocomplete_attribute_and_login_fields
+                autoComplete="new-password"
                 disabled={!isUnlocked}
                 value={fields.accountPassword}
                 onChange={handleFieldChange}
