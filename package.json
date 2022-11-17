@@ -1,6 +1,6 @@
 {
   "name": "web-apps-cryptopass",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "homepage": "/apps/cryptopass/",
   "dependencies": {
@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^13.5.0",
     "crypto-js": "^4.1.1",
     "file-saver": "^2.0.5",
+    "generate-password-browser": "^1.1.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",

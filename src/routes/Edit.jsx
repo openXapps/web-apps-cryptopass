@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { v1 as uuidv1 } from 'uuid';
+import { generate } from 'generate-password-browser';
 
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -17,6 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import KeyIcon from '@mui/icons-material/Key';
 
 import {
   getPasswordById,
@@ -52,6 +54,7 @@ function Edit() {
   const [decryptError, setDecryptError] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
+  const passwordLength = getSettings().data.passwordLengthMarker;
 
   useEffect(() => {
     if (rrPath === '/edit/new') {
@@ -247,6 +250,21 @@ function Edit() {
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={!isUnlocked}
               >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+              <IconButton
+                onClick={() => {
+                  if (!showPassword) setShowPassword(true);
+                  if (isSaved) setIsSaved(false);
+                  if (decryptError) setDecryptError(false);
+                  setFields({
+                    ...fields, accountPassword: generate({
+                      length: passwordLength,
+                      numbers: true,
+                      symbols: false
+                    })
+                  });
+                }}
+                disabled={!isUnlocked}
+              ><KeyIcon /></IconButton>
             </Stack>
             <TextField
               label="Last Changed"

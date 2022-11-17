@@ -12,11 +12,11 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-// import Slider from '@mui/material/Slider';
+import Slider from '@mui/material/Slider';
 
 import { AppContext } from '../context/AppStore';
 import { saveLocalStorage, getSettings } from '../helpers/localstorage';
-import { storageItems, sortOrders } from '../config/defaults';
+import { storageItems, sortOrders, passwordLengthMarkers } from '../config/defaults';
 
 const Settings = () => {
   const rrNavigate = useNavigate();
@@ -26,6 +26,7 @@ const Settings = () => {
   const [_dencifyPasswordList, setDencifyPasswordList] = useState(settings.passwordListIsDense);
   const [_confirmOnDelete, setConfirmOnDelete] = useState(settings.confirmOnDelete);
   const [_sortOrder, setSortOrder] = useState(settings.sortOrder);
+  // const [_passwordLength, setPasswordLength] = useState(settings.passwordLengthMarker);
 
   // Managed state and persistence
   const handleTheme = () => {
@@ -49,9 +50,10 @@ const Settings = () => {
     setSortOrder(e.target.value);
   };
 
-  // const handlePasswordLengthMarker = (event, value) => {
-  //   saveLocalStorage(storageItems.settings, { ...settings, passwordLengthMarker: value });
-  // };
+  const handlePasswordLengthMarker = (event, value) => {
+    // console.log(value);
+    saveLocalStorage(storageItems.settings, { ...settings, passwordLengthMarker: value });
+  };
 
   return (
     <Container maxWidth="sm">
@@ -76,7 +78,6 @@ const Settings = () => {
             {sortOrders.map((v, i) => <MenuItem key={i} value={v.value}>{v.label}</MenuItem>)}
           </Select>
         </FormControl>
-        {/* <Typography sx={{ mt: 2, color: 'warning.main' }}>Options below is for future use!</Typography>
         <Stack spacing={2} direction="row" alignItems="center" pr={1} my={2} mr={2}>
           <Typography sx={{ mr: 3 }}>Password Length</Typography>
           <Slider
@@ -87,7 +88,8 @@ const Settings = () => {
             max={passwordLengthMarkers[passwordLengthMarkers.length - 1].value}
             onChangeCommitted={handlePasswordLengthMarker}
           />
-        </Stack> */}
+        </Stack>
+        {/* <Typography sx={{ mt: 2, color: 'warning.main' }}>Options below is for future use!</Typography> */}
         <Button
           sx={{ mt: 2 }}
           variant="outlined"
