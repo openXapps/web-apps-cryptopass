@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { v1 as uuidv1 } from 'uuid';
 import { generate } from 'generate-password-browser';
 
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -12,13 +13,17 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import PatternIcon from '@mui/icons-material/Pattern';
 import KeyIcon from '@mui/icons-material/Key';
+
+import PatternLock from '../components/patternlock/PatternLock';
 
 import {
   getPasswordById,
@@ -46,7 +51,13 @@ function Edit() {
   const rrPath = useLocation().pathname;
   const secretEl = useRef(null);
   const { passwordId } = useParams();
-  const [mode, setMode] = useState('');
+  const [editMode, setEditMode] = useState('');
+  const [unlockMode, setUnlockMode] = useState('');
+  const [dialogMode, setDialogMode] = useState('');
+  // const [hasPattern, setHasPattern] = useState(false);
+  const [patternPath, setPatternPath] = useState([]);
+  const [patternSuccess, setPatternSuccess] = useState(false);
+  const [patternError, setPatternError] = useState(false);
   const [header, setHeader] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [fields, setFields] = useState(initialFieldData);
@@ -55,15 +66,16 @@ function Edit() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
   const passwordLength = getSettings().data.passwordLengthMarker;
+  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (rrPath === '/edit/new') {
-      setMode('NEW');
+      setEditMode('NEW');
       setHeader('Create New Password');
       setIsUnlocked(true);
     } else {
       if (passwordId) {
-        setMode('EDIT');
+        setEditMode('EDIT');
         setHeader('Edit Password');
         let password = getPasswordById(passwordId).data;
         if (password.length > 0) setFields({
@@ -84,10 +96,39 @@ function Edit() {
   }, [rrPath, passwordId]);
 
   const handleFieldChange = ({ target: { name, value } }) => {
+    // console.log('handleFieldChange: name...', name);
     // if (isSaved && name !== 'accountSecret') setIsSaved(false);
+    if (name === 'accountSecret' && unlockMode !== 'SECRET') setUnlockMode('SECRET');
     if (isSaved && isUnlocked) setIsSaved(false);
     if (decryptError) setDecryptError(false);
     setFields({ ...fields, [name]: value });
+  };
+
+  const handlePatternButton = () => {
+    if (decryptError) setDecryptError(false);
+    if (dialogMode !== 'PATTERN') setDialogMode('PATTERN');
+    if (patternPath.length > 0) setPatternPath([]);
+    if (patternError) setPatternError(false);
+    if (patternSuccess) setPatternSuccess(false);
+    setDialogOpen(true);
+  };
+
+  const handlePatternFinish = () => {
+    console.log(patternPath);
+    let patternInvalid = true;
+    if (patternInvalid) {
+      setPatternError(true);
+      setTimeout(() => {
+        setPatternError(false);
+        setPatternPath([]);
+      }, 800);
+    } else {
+      setPatternSuccess(true);
+      setTimeout(() => {
+        // setPatternSuccess(false);
+        setDialogOpen(false);
+      }, 500);
+    }
   };
 
   const handleUnlockButton = (e) => {
@@ -118,7 +159,7 @@ function Edit() {
           if (!decryptError) {
             setDecryptError(true);
             setFields({ ...fields, accountSecret: '' });
-            secretEl.current.focus();
+            if (unlockMode === 'SECRET') secretEl.current.focus();
           }
           if (isUnlocked) setIsUnlocked(false);
         }
@@ -135,11 +176,11 @@ function Edit() {
     let passwordToSave = {};
 
     // ToDo: form validation
-    // isFormValid = validateForm(`PASSWORD_${mode}`, fields);
+    // isFormValid = validateForm(`PASSWORD_${editMode}`, fields);
 
     if (fields.accountSecret.length > 0 && isFormValid) {
       passwordToSave = {
-        passwordId: mode === 'EDIT' ? fields.passwordId : uuidv1(),
+        passwordId: editMode === 'EDIT' ? fields.passwordId : uuidv1(),
         passwordTitle: fields.passwordTitle,
         accountCipher: encryptString(fields.accountName, fields.accountSecret),
         passwordCipher: encryptString(fields.accountPassword, fields.accountSecret),
@@ -147,7 +188,7 @@ function Edit() {
         lastChanged: new Date(),
       };
       // console.log('passwordToSave...', passwordToSave);
-      if (mode === 'EDIT') {
+      if (editMode === 'EDIT') {
         updatePassword(passwordToSave.passwordId, passwordToSave);
         setIsSaved(true);
       } else {
@@ -172,8 +213,9 @@ function Edit() {
 
   const handleDeleteButton = (e) => {
     // ToDo: need to implement confirmation dialog
-    if (mode === 'EDIT' && passwordId) {
+    if (editMode === 'EDIT' && passwordId) {
       if (getSettings().data.confirmOnDelete) {
+        setDialogMode('DELETE');
         setDialogOpen(true);
       } else {
         deletePasswordAction();
@@ -194,7 +236,7 @@ function Edit() {
         <Paper sx={{ mt: 2, p: 2 }}>
           <Stack spacing={2}>
             <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
-              <Stack spacing={2} direction="row" alignItems="center">
+              <Stack spacing={smallScreen ? 1 : 2} direction="row" alignItems="center">
                 <TextField
                   error={decryptError}
                   label="Secret"
@@ -211,6 +253,12 @@ function Edit() {
                   variant="outlined"
                   disabled={isUnlocked}
                 >Unlock</Button>
+                <Divider orientation="vertical" flexItem />
+                <IconButton
+                  color={patternSuccess ? 'success' : 'warning'}
+                  variant="outlined"
+                  onClick={handlePatternButton}
+                ><PatternIcon /></IconButton>
               </Stack>
             </Box>
             <TextField
@@ -293,7 +341,7 @@ function Edit() {
               variant="outlined"
               fullWidth
               onClick={handleDeleteButton}
-              disabled={mode === 'NEW'}
+              disabled={editMode === 'NEW'}
             >Delete</Button>
             <Button
               variant="outlined"
@@ -305,14 +353,43 @@ function Edit() {
       </Container>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} aria-labelledby="alert-dialog-title">
-        <DialogTitle id="alert-dialog-title" textAlign="center">Delete Confirmation</DialogTitle>
-        <DialogContent>
-          <Typography>Password record will be permanently deleted. Are you sure?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteYesButton} fullWidth variant="outlined">Yes</Button>
-          <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">No</Button>
-        </DialogActions>
+        {dialogMode === 'DELETE' && (
+          <>
+            <DialogTitle id="alert-dialog-title" textAlign="center">Delete Confirmation</DialogTitle>
+            <DialogContent>
+              <Typography>Password record will be permanently deleted. Are you sure?</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDeleteYesButton} fullWidth variant="outlined">Yes</Button>
+              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">No</Button>
+            </DialogActions>
+          </>
+        )}
+        {dialogMode === 'PATTERN' && (
+          <>
+            <DialogTitle id="alert-dialog-title" textAlign="center">Pattern Unlock</DialogTitle>
+            <DialogContent>
+              <PatternLock
+                width={250}
+                pointSize={20}
+                size={3}
+                path={patternPath}
+                connectorThickness={5}
+                disabled={false}
+                success={patternSuccess}
+                error={patternError}
+                onChange={(pattern) => {
+                  setPatternPath(pattern);
+                }}
+                onFinish={handlePatternFinish}
+              />
+            </DialogContent>
+            <DialogActions>
+              {/* <Button onClick={handleDeleteYesButton} fullWidth variant="outlined">Yes</Button> */}
+              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">Cancel</Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </>
   );
