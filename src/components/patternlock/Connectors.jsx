@@ -11,7 +11,8 @@ const Connectors = ({
   pointActiveSize,
   connectorThickness,
   connectorRoundedCorners,
-  initialMousePosition
+  initialMousePosition,
+  isDark
 }) => {
   const [mouse, setMouse] = useState(null);
 
@@ -69,7 +70,7 @@ const Connectors = ({
     >{
         connectors.map(({ from, to }, i) => (
           <div
-            className="react-pattern-lock__connector"
+            className={`react-pattern-lock__connector-${isDark ? 'dark' : 'light'}`}
             key={i}
             style={{
               transform: `rotate(${getAngle(from, to)}rad)`,

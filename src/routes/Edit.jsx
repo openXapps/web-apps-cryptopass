@@ -50,11 +50,11 @@ function Edit() {
   const rrNavigate = useNavigate();
   const rrPath = useLocation().pathname;
   const secretEl = useRef(null);
+  const isDark = !getSettings().data.themeIsDark
   const { passwordId } = useParams();
   const [editMode, setEditMode] = useState('');
-  const [unlockMode, setUnlockMode] = useState('');
+  // const [unlockMode, setUnlockMode] = useState('');
   const [dialogMode, setDialogMode] = useState('');
-  // const [hasPattern, setHasPattern] = useState(false);
   const [patternPath, setPatternPath] = useState([]);
   const [patternSuccess, setPatternSuccess] = useState(false);
   const [patternError, setPatternError] = useState(false);
@@ -67,6 +67,19 @@ function Edit() {
   const [isSaved, setIsSaved] = useState(true);
   const passwordLength = getSettings().data.passwordLengthMarker;
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+
+  //   console.log(`
+  // editMode        ${editMode}
+  // patternPath     ${patternPath}
+  // patternSuccess  ${patternSuccess}
+  // patternError    ${patternError}
+  // decryptError    ${decryptError}
+  // isUnlocked      ${isUnlocked}
+  // isSaved         ${isSaved}
+  // dialogMode      ${dialogMode}
+  // dialogOpen      ${dialogOpen}
+  // accountSecret   ${fields.accountSecret}
+  //   `);
 
   useEffect(() => {
     if (rrPath === '/edit/new') {
@@ -98,85 +111,73 @@ function Edit() {
   const handleFieldChange = ({ target: { name, value } }) => {
     // console.log('handleFieldChange: name...', name);
     // if (isSaved && name !== 'accountSecret') setIsSaved(false);
-    if (name === 'accountSecret' && unlockMode !== 'SECRET') setUnlockMode('SECRET');
+    // if (name === 'accountSecret' && unlockMode !== 'SECRET') setUnlockMode('SECRET');
     if (isSaved && isUnlocked) setIsSaved(false);
     if (decryptError) setDecryptError(false);
     setFields({ ...fields, [name]: value });
   };
 
+  /************************************************************************************
+   * BUTTON HANDLER helpers
+   */
   const handlePatternButton = () => {
-    if (decryptError) setDecryptError(false);
-    if (dialogMode !== 'PATTERN') setDialogMode('PATTERN');
+    // if (unlockMode !== 'PATTERN') setUnlockMode('PATTREN');
     if (patternPath.length > 0) setPatternPath([]);
     if (patternError) setPatternError(false);
     if (patternSuccess) setPatternSuccess(false);
+    if (decryptError) setDecryptError(false);
+
+    if (isUnlocked) {
+      if (dialogMode !== 'PATTERN_SET') setDialogMode('PATTERN_SET');
+    }
+    if (editMode === 'EDIT' && !isUnlocked) {
+      if (dialogMode !== 'PATTERN_UNLOCK') setDialogMode('PATTERN_UNLOCK');
+    }
+
     setDialogOpen(true);
   };
 
-  const handlePatternFinish = () => {
-    console.log(patternPath);
-    let patternInvalid = true;
-    if (patternInvalid) {
-      setPatternError(true);
-      setTimeout(() => {
-        setPatternError(false);
-        setPatternPath([]);
-      }, 800);
-    } else {
-      setPatternSuccess(true);
-      setTimeout(() => {
-        // setPatternSuccess(false);
-        setDialogOpen(false);
-      }, 500);
+  const handlePatternSaveButton = () => {
+    if (patternPath.length > 0) {
+      setDialogOpen(false);
+      setFields({ ...fields, accountSecret: patternPath.join('-') });
+      setIsSaved(false);
     }
   };
 
   const handleUnlockButton = (e) => {
+    // Form button, need to block defaults
     e.preventDefault();
-    let _username = { ok: false, message: '', value: '' };
-    let _password = { ok: false, message: '', value: '' };
-    // console.log('passwordUnlockSecret...', passwordUnlockSecret);
     if (!isUnlocked) {
       if (fields.accountSecret.length > 0) {
-        _username = decryptCipher(fields.accountCipher, fields.accountSecret);
-        _password = decryptCipher(fields.passwordCipher, fields.accountSecret);
-        // console.log('_username...', _username);
-        // console.log('_password...', _password);
-        if (_username.ok && _password.ok) {
-          // console.log('Decryption good');
-          setFields(prevState => {
-            return {
-              ...prevState,
-              accountName: _username.value,
-              accountPassword: _password.value
-            };
-          });
-          // handleDialogClose();
-          if (decryptError) setDecryptError(false);
-          setIsUnlocked(true);
-        } else {
-          // console.log('Decryption failed');
-          if (!decryptError) {
-            setDecryptError(true);
-            setFields({ ...fields, accountSecret: '' });
-            if (unlockMode === 'SECRET') secretEl.current.focus();
-          }
-          if (isUnlocked) setIsUnlocked(false);
-        }
+        decryptPasswordAction(fields.accountSecret);
       } else {
-        if (!decryptError) setDecryptError(true);
-        if (isUnlocked) setIsUnlocked(false);
         secretEl.current.focus();
       }
     }
   };
 
-  const handleSaveButton = (e) => {
+  const handleKeyButton = () => {
+    if (!showPassword) setShowPassword(true);
+    if (isSaved) setIsSaved(false);
+    if (decryptError) setDecryptError(false);
+    setFields({
+      ...fields,
+      accountPassword: generate({
+        length: passwordLength,
+        numbers: true,
+        symbols: false
+      })
+    });
+  };
+
+  const handleSaveButton = () => {
     let isFormValid = true
     let passwordToSave = {};
 
     // ToDo: form validation
     // isFormValid = validateForm(`PASSWORD_${editMode}`, fields);
+    console.log('handleSaveButton: accountSecret...', fields.accountSecret);
 
     if (fields.accountSecret.length > 0 && isFormValid) {
       passwordToSave = {
@@ -187,32 +188,23 @@ function Edit() {
         lastUsed: new Date(),
         lastChanged: new Date(),
       };
-      // console.log('passwordToSave...', passwordToSave);
       if (editMode === 'EDIT') {
         updatePassword(passwordToSave.passwordId, passwordToSave);
-        setIsSaved(true);
-      } else {
-        addPassword(passwordToSave);
+        setFields({ ...fields, accountSecret: '' });
         setIsSaved(true);
         setIsUnlocked(false);
-        setTimeout(() => {
-          rrNavigate(`/edit/${passwordToSave.passwordId}`, { replace: true });
-        }, 800);
+      } else {
+        addPassword(passwordToSave);
+        rrNavigate(-1);
+        // Redirect to edit mode
+        // setTimeout(() => {
+        //   rrNavigate(`/edit/${passwordToSave.passwordId}`, { replace: true });
+        // }, 800);
       };
     }
   };
 
-  const deletePasswordAction = () => {
-    deletePassword(passwordId);
-    setFields({ ...initialFieldData, passwordId: uuidv1() });
-    setIsUnlocked(true);
-    setTimeout(() => {
-      rrNavigate('/edit/new', { replace: true });
-    }, 800);
-  };
-
   const handleDeleteButton = (e) => {
-    // ToDo: need to implement confirmation dialog
     if (editMode === 'EDIT' && passwordId) {
       if (getSettings().data.confirmOnDelete) {
         setDialogMode('DELETE');
@@ -227,6 +219,71 @@ function Edit() {
     setDialogOpen(false);
     deletePasswordAction();
   };
+  /*
+   * BUTTON HANDLER helpers
+   ***********************************************************************************/
+
+
+  /************************************************************************************
+   * ACTION helpers
+   */
+  const decryptPasswordAction = (secret = '') => {
+    let _username = { ok: false, message: '', value: '' };
+    let _password = { ok: false, message: '', value: '' };
+    console.log('decryptPasswordAction: secret...', secret);
+    if (secret.length > 0) {
+      _username = decryptCipher(fields.accountCipher, secret);
+      _password = decryptCipher(fields.passwordCipher, secret);
+      // console.log('_username...', _username);
+      // console.log('_password...', _password);
+      if (_username.ok && _password.ok) {
+        // console.log('Decryption good');
+        setFields(prevState => {
+          return {
+            ...prevState,
+            accountName: _username.value,
+            accountPassword: _password.value
+          };
+        });
+        if (decryptError) setDecryptError(false);
+        setIsUnlocked(true);
+      } else {
+        // console.log('Decryption failed');
+        if (!decryptError) setDecryptError(true);
+        if (isUnlocked) setIsUnlocked(false);
+        setFields({ ...fields, accountSecret: '' });
+        secretEl.current.focus();
+      }
+    } else {
+      if (!decryptError) setDecryptError(true);
+      if (isUnlocked) setIsUnlocked(false);
+      secretEl.current.focus();
+    }
+  };
+
+  const patternFinishAction = () => {
+    console.log('patternFinishAction: patternPath...', patternPath);
+    if (patternPath.length > 0) {
+      const pattern = patternPath.join('-');
+      setFields({ ...fields, accountSecret: pattern });
+      setDialogOpen(false);
+      decryptPasswordAction(pattern);
+    }
+  };
+
+  const deletePasswordAction = () => {
+    deletePassword(passwordId);
+    rrNavigate(-1);
+    // setFields({ ...initialFieldData, passwordId: uuidv1() });
+    // if (!isUnlocked) setIsUnlocked(true);
+    // if (!isSaved) setIsSaved(true);
+    // setTimeout(() => {
+    //   rrNavigate('/edit/new', { replace: true });
+    // }, 800);
+  };
+  /*
+   * ACTION helpers
+   ***********************************************************************************/
 
   return (
     <>
@@ -248,17 +305,17 @@ function Edit() {
                   fullWidth
                   inputRef={secretEl}
                 />
+                <IconButton
+                  color={patternSuccess ? 'success' : 'primary'}
+                  variant="outlined"
+                  onClick={handlePatternButton}
+                ><PatternIcon /></IconButton>
+                <Divider orientation="vertical" flexItem />
                 <Button
                   onClick={handleUnlockButton}
                   variant="outlined"
                   disabled={isUnlocked}
                 >Unlock</Button>
-                <Divider orientation="vertical" flexItem />
-                <IconButton
-                  color={patternSuccess ? 'success' : 'warning'}
-                  variant="outlined"
-                  onClick={handlePatternButton}
-                ><PatternIcon /></IconButton>
               </Stack>
             </Box>
             <TextField
@@ -299,18 +356,7 @@ function Edit() {
                 disabled={!isUnlocked}
               >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
               <IconButton
-                onClick={() => {
-                  if (!showPassword) setShowPassword(true);
-                  if (isSaved) setIsSaved(false);
-                  if (decryptError) setDecryptError(false);
-                  setFields({
-                    ...fields, accountPassword: generate({
-                      length: passwordLength,
-                      numbers: true,
-                      symbols: false
-                    })
-                  });
-                }}
+                onClick={handleKeyButton}
                 disabled={!isUnlocked}
               ><KeyIcon /></IconButton>
             </Stack>
@@ -365,11 +411,15 @@ function Edit() {
             </DialogActions>
           </>
         )}
-        {dialogMode === 'PATTERN' && (
+        {dialogMode === 'PATTERN_SET' && (
           <>
-            <DialogTitle id="alert-dialog-title" textAlign="center">Pattern Unlock</DialogTitle>
+            <DialogTitle id="alert-dialog-title" textAlign="center">Create a Pattern Lock</DialogTitle>
             <DialogContent>
+              <Box sx={{ textAlign: 'center', color: 'warning.main' }}>
+                <Typography variant="caption">!! Pattern lock is less secure !!</Typography>
+              </Box>
               <PatternLock
+                isDark={isDark}
                 width={250}
                 pointSize={20}
                 size={3}
@@ -381,11 +431,37 @@ function Edit() {
                 onChange={(pattern) => {
                   setPatternPath(pattern);
                 }}
-                onFinish={handlePatternFinish}
+                onFinish={() => { }}
               />
             </DialogContent>
             <DialogActions>
-              {/* <Button onClick={handleDeleteYesButton} fullWidth variant="outlined">Yes</Button> */}
+              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">Cancel</Button>
+              <Button onClick={() => patternPath.length > 0 && setPatternPath([])} fullWidth variant="outlined">Reset</Button>
+              <Button onClick={handlePatternSaveButton} fullWidth variant="outlined">Save</Button>
+            </DialogActions>
+          </>
+        )}
+        {dialogMode === 'PATTERN_UNLOCK' && (
+          <>
+            <DialogTitle id="alert-dialog-title" textAlign="center">Unlock with Pattern</DialogTitle>
+            <DialogContent>
+              <PatternLock
+                isDark={isDark}
+                width={250}
+                pointSize={20}
+                size={3}
+                path={patternPath}
+                connectorThickness={5}
+                disabled={false}
+                success={patternSuccess}
+                error={patternError}
+                onChange={(pattern) => {
+                  setPatternPath(pattern);
+                }}
+                onFinish={patternFinishAction}
+              />
+            </DialogContent>
+            <DialogActions>
               <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">Cancel</Button>
             </DialogActions>
           </>

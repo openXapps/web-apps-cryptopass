@@ -4,7 +4,8 @@ const Point = ({
   pointActiveSize,
   size,
   selected,
-  pop
+  pop,
+  isDark
 }) => {
   const percentPerItem = 100 / size;
 
@@ -26,7 +27,7 @@ const Point = ({
         }}
       >
         <div
-          className={`react-pattern-lock__point-inner${pop ? " active" : ""}`}
+          className={`react-pattern-lock__point-inner-${isDark ? "dark" : "light"}${pop ? " active" : ""}`}
           style={{
             minWidth: pointSize,
             minHeight: pointSize

@@ -20,7 +20,12 @@ const Styles = createGlobalStyle`
         flex-wrap: wrap;
         position: relative;
     }
-    .react-pattern-lock__connector {
+    .react-pattern-lock__connector-dark {
+        background: black;
+        position: absolute;
+        transform-origin: center left;
+    }
+    .react-pattern-lock__connector-light {
         background: white;
         position: absolute;
         transform-origin: center left;
@@ -36,29 +41,40 @@ const Styles = createGlobalStyle`
         justify-content: center;
         align-items: center;
     }
-    .react-pattern-lock__point-inner {
+    .react-pattern-lock__point-inner-dark {
+        background: black;
+        border-radius: 50%;
+    }
+    .react-pattern-lock__point-inner-light {
         background: white;
         border-radius: 50%;
     }
-    .react-pattern-lock__point-inner.active {
+    .react-pattern-lock__point-inner-dark.active {
+        animation: pop 300ms ease;
+    }
+    .react-pattern-lock__point-inner-light.active {
         animation: pop 300ms ease;
     }
     .react-pattern-lock__pattern-wrapper.disabled,
     .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__point {
         cursor: not-allowed;
     }
-    .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__point-inner,
-    .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__connector {
+    .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__point-inner-dark,
+    .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__point-inner-light,
+    .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__connector-dark,
+    .react-pattern-lock__pattern-wrapper.disabled .react-pattern-lock__connector-light {
         background: grey;
     }
-
-    .react-pattern-lock__pattern-wrapper.success .react-pattern-lock__point-inner,
-    .react-pattern-lock__pattern-wrapper.success .react-pattern-lock__connector {
+    .react-pattern-lock__pattern-wrapper.success .react-pattern-lock__point-inner-dark,
+    .react-pattern-lock__pattern-wrapper.success .react-pattern-lock__point-inner-light,
+    .react-pattern-lock__pattern-wrapper.success .react-pattern-lock__connector-dark,
+    .react-pattern-lock__pattern-wrapper.success .react-pattern-lock__connector-light {
         background: #00ff00;
     }
-
-    .react-pattern-lock__pattern-wrapper.error .react-pattern-lock__point-inner,
-    .react-pattern-lock__pattern-wrapper.error .react-pattern-lock__connector {
+    .react-pattern-lock__pattern-wrapper.error .react-pattern-lock__point-inner-dark,
+    .react-pattern-lock__pattern-wrapper.error .react-pattern-lock__point-inner-light,
+    .react-pattern-lock__pattern-wrapper.error .react-pattern-lock__connector-dark,
+    .react-pattern-lock__pattern-wrapper.error .react-pattern-lock__connector-light {
         background: red;
     }
 
@@ -85,6 +101,7 @@ const PatternLock = ({
   allowJumping = false,
   className = '',
   style = {},
+  isDark = false,
   onChange,
   onFinish,
   path
@@ -198,6 +215,7 @@ const PatternLock = ({
               pointActiveSize={pointActiveSize}
               pop={!noPop && isMouseDown && path[path.length - 1] === i}
               selected={path.indexOf(i) > -1}
+              isDark={isDark}
             />
           ))
         }
@@ -211,6 +229,7 @@ const PatternLock = ({
             pointActiveSize={pointActiveSize}
             connectorRoundedCorners={connectorRoundedCorners}
             connectorThickness={connectorThickness}
+            isDark={isDark}
           />
         }
 
@@ -236,6 +255,7 @@ PatternLock.propTypes = {
   className: PropTypes.string,
   noPop: PropTypes.bool,
   invisible: PropTypes.bool,
+  isDark: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   onFinish: PropTypes.func.isRequired
 };
