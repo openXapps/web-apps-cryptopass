@@ -49,24 +49,26 @@ const initialFieldData = {
 function Edit() {
   const rrNavigate = useNavigate();
   const rrPath = useLocation().pathname;
+  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const secretEl = useRef(null);
+  const passwordLength = getSettings().data.passwordLengthMarker;
   const isDark = !getSettings().data.themeIsDark
   const { passwordId } = useParams();
+
+  // Component state
+  const [routeHeader, setRouteHeader] = useState('');
   const [editMode, setEditMode] = useState('');
-  // const [unlockMode, setUnlockMode] = useState('');
-  const [dialogMode, setDialogMode] = useState('');
-  const [patternPath, setPatternPath] = useState([]);
-  const [patternSuccess, setPatternSuccess] = useState(false);
-  const [patternError, setPatternError] = useState(false);
-  const [header, setHeader] = useState('');
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [fields, setFields] = useState(initialFieldData);
+  const [dialogMode, setDialogMode] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [decryptError, setDecryptError] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
-  const passwordLength = getSettings().data.passwordLengthMarker;
-  const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  const [patternPath, setPatternPath] = useState([]);
+  const [patternSuccess, setPatternSuccess] = useState(false);
+  const [patternError, setPatternError] = useState(false);
+  // const [unlockMode, setUnlockMode] = useState('');
 
   //   console.log(`
   // editMode        ${editMode}
@@ -84,12 +86,12 @@ function Edit() {
   useEffect(() => {
     if (rrPath === '/edit/new') {
       setEditMode('NEW');
-      setHeader('Create New Password');
+      setRouteHeader('Create New Password');
       setIsUnlocked(true);
     } else {
       if (passwordId) {
         setEditMode('EDIT');
-        setHeader('Edit Password');
+        setRouteHeader('Edit Password');
         let password = getPasswordById(passwordId).data;
         if (password.length > 0) setFields({
           accountName: '*********',
@@ -289,7 +291,7 @@ function Edit() {
     <>
       <Container maxWidth="sm">
         <Toolbar />
-        <Typography variant="h6" sx={{ mt: 2 }}>{header}</Typography>
+        <Typography variant="h6" sx={{ mt: 2 }}>{routeHeader}</Typography>
         <Paper sx={{ mt: 2, p: 2 }}>
           <Stack spacing={2}>
             <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
