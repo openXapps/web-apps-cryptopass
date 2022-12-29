@@ -43,14 +43,13 @@ const initialFieldData = {
   lastChanged: new Date(),
   accountName: '',
   accountPassword: '',
-  accountSecret: ''
 };
 
 function Edit() {
   const rrNavigate = useNavigate();
   const rrPath = useLocation().pathname;
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
-  const secretEl = useRef(null);
+  const secretRef = useRef(null);
   const passwordLength = getSettings().data.passwordLengthMarker;
   const isDark = !getSettings().data.themeIsDark
   const { passwordId } = useParams();
@@ -59,80 +58,72 @@ function Edit() {
   const [routeHeader, setRouteHeader] = useState('');
   const [editMode, setEditMode] = useState('');
   const [fields, setFields] = useState(initialFieldData);
+  const [secret, setSecret] = useState('');
   const [dialogMode, setDialogMode] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [decryptError, setDecryptError] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isLocked, setIsLocked] = useState(true);
   const [isSaved, setIsSaved] = useState(true);
   const [patternPath, setPatternPath] = useState([]);
-  const [patternSuccess, setPatternSuccess] = useState(false);
-  const [patternError, setPatternError] = useState(false);
-  // const [unlockMode, setUnlockMode] = useState('');
-
-  //   console.log(`
-  // editMode        ${editMode}
-  // patternPath     ${patternPath}
-  // patternSuccess  ${patternSuccess}
-  // patternError    ${patternError}
-  // decryptError    ${decryptError}
-  // isUnlocked      ${isUnlocked}
-  // isSaved         ${isSaved}
-  // dialogMode      ${dialogMode}
-  // dialogOpen      ${dialogOpen}
-  // accountSecret   ${fields.accountSecret}
-  //   `);
 
   useEffect(() => {
     if (rrPath === '/edit/new') {
       setEditMode('NEW');
       setRouteHeader('Create New Password');
-      setIsUnlocked(true);
-    } else {
-      if (passwordId) {
-        setEditMode('EDIT');
-        setRouteHeader('Edit Password');
-        let password = getPasswordById(passwordId).data;
-        if (password.length > 0) setFields({
-          accountName: '*********',
-          accountPassword: '************',
-          accountSecret: '',
-          passwordId: passwordId,
-          passwordTitle: password[0].passwordTitle,
-          accountCipher: password[0].accountCipher,
-          passwordCipher: password[0].passwordCipher,
-          lastUsed: password[0].lastUsed,
-          lastChanged: password[0].lastChanged,
-        });
-      }
+      setIsLocked(false);
+      secretRef.current.focus();
     }
-    secretEl.current.focus();
+    if (rrPath !== '/edit/new' && passwordId) {
+      setEditMode('EDIT');
+      setRouteHeader('Edit Password');
+      let password = getPasswordById(passwordId).data;
+      if (password.length > 0) setFields({
+        accountName: '*********',
+        accountPassword: '************',
+        passwordId: passwordId,
+        passwordTitle: password[0].passwordTitle,
+        accountCipher: password[0].accountCipher,
+        passwordCipher: password[0].passwordCipher,
+        lastUsed: password[0].lastUsed,
+        lastChanged: password[0].lastChanged,
+      });
+      secretRef.current.focus();
+    }
+
     return () => true;
   }, [rrPath, passwordId]);
 
+  /************************************************************************************
+   * FIELD CHANGE handlers
+   */
   const handleFieldChange = ({ target: { name, value } }) => {
-    // console.log('handleFieldChange: name...', name);
-    // if (isSaved && name !== 'accountSecret') setIsSaved(false);
-    // if (name === 'accountSecret' && unlockMode !== 'SECRET') setUnlockMode('SECRET');
-    if (isSaved && isUnlocked) setIsSaved(false);
-    if (decryptError) setDecryptError(false);
-    setFields({ ...fields, [name]: value });
+    if (isSaved && !isLocked) setIsSaved(false);
+    setFields(prevState => {
+      return { ...prevState, [name]: value };
+    });
   };
 
+  const handleSecretChange = (e) => {
+    if (isSaved && !isLocked) setIsSaved(false);
+    if (decryptError) setDecryptError(false);
+    setSecret(e.target.value);
+  };
+  /*
+   * FIELD CHANGE handlers
+   ***********************************************************************************/
+
   /************************************************************************************
-   * BUTTON HANDLER helpers
+   * BUTTON handlers
    */
   const handlePatternButton = () => {
-    // if (unlockMode !== 'PATTERN') setUnlockMode('PATTREN');
     if (patternPath.length > 0) setPatternPath([]);
-    if (patternError) setPatternError(false);
-    if (patternSuccess) setPatternSuccess(false);
     if (decryptError) setDecryptError(false);
 
-    if (isUnlocked) {
+    if (!isLocked) {
       if (dialogMode !== 'PATTERN_SET') setDialogMode('PATTERN_SET');
     }
-    if (editMode === 'EDIT' && !isUnlocked) {
+    if (editMode === 'EDIT' && isLocked) {
       if (dialogMode !== 'PATTERN_UNLOCK') setDialogMode('PATTERN_UNLOCK');
     }
 
@@ -142,7 +133,7 @@ function Edit() {
   const handlePatternSaveButton = () => {
     if (patternPath.length > 0) {
       setDialogOpen(false);
-      setFields({ ...fields, accountSecret: patternPath.join('-') });
+      setSecret(patternPath.join('-'));
       setIsSaved(false);
     }
   };
@@ -150,12 +141,8 @@ function Edit() {
   const handleUnlockButton = (e) => {
     // Form button, need to block defaults
     e.preventDefault();
-    if (!isUnlocked) {
-      if (fields.accountSecret.length > 0) {
-        decryptPasswordAction(fields.accountSecret);
-      } else {
-        secretEl.current.focus();
-      }
+    if (isLocked) {
+      if (secret.length > 0) decryptPasswordAction(secret);
     }
   };
 
@@ -163,13 +150,15 @@ function Edit() {
     if (!showPassword) setShowPassword(true);
     if (isSaved) setIsSaved(false);
     if (decryptError) setDecryptError(false);
-    setFields({
-      ...fields,
-      accountPassword: generate({
-        length: passwordLength,
-        numbers: true,
-        symbols: false
-      })
+    setFields(prevState => {
+      return {
+        ...prevState,
+        accountPassword: generate({
+          length: passwordLength,
+          numbers: true,
+          symbols: false
+        })
+      };
     });
   };
 
@@ -177,31 +166,33 @@ function Edit() {
     let isFormValid = true
     let passwordToSave = {};
 
-    // ToDo: form validation
+    // TODO: form validation
     // isFormValid = validateForm(`PASSWORD_${editMode}`, fields);
-    console.log('handleSaveButton: accountSecret...', fields.accountSecret);
 
-    if (fields.accountSecret.length > 0 && isFormValid) {
+    if (secret.length > 0 && isFormValid) {
       passwordToSave = {
         passwordId: editMode === 'EDIT' ? fields.passwordId : uuidv1(),
         passwordTitle: fields.passwordTitle,
-        accountCipher: encryptString(fields.accountName, fields.accountSecret),
-        passwordCipher: encryptString(fields.accountPassword, fields.accountSecret),
-        lastUsed: new Date(),
+        accountCipher: encryptString(fields.accountName, secret),
+        passwordCipher: encryptString(fields.accountPassword, secret),
+        lastUsed: fields.lastUsed,
         lastChanged: new Date(),
       };
       if (editMode === 'EDIT') {
         updatePassword(passwordToSave.passwordId, passwordToSave);
-        setFields({ ...fields, accountSecret: '' });
+        setFields(prevState => {
+          return {
+            ...prevState,
+            accountCipher: passwordToSave.accountCipher,
+            passwordCipher: passwordToSave.passwordCipher
+          }
+        });
+        setSecret('');
         setIsSaved(true);
-        setIsUnlocked(false);
+        setIsLocked(true);
       } else {
         addPassword(passwordToSave);
         rrNavigate(-1);
-        // Redirect to edit mode
-        // setTimeout(() => {
-        //   rrNavigate(`/edit/${passwordToSave.passwordId}`, { replace: true });
-        // }, 800);
       };
     }
   };
@@ -222,9 +213,8 @@ function Edit() {
     deletePasswordAction();
   };
   /*
-   * BUTTON HANDLER helpers
+   * BUTTON handlers
    ***********************************************************************************/
-
 
   /************************************************************************************
    * ACTION helpers
@@ -232,7 +222,6 @@ function Edit() {
   const decryptPasswordAction = (secret = '') => {
     let _username = { ok: false, message: '', value: '' };
     let _password = { ok: false, message: '', value: '' };
-    console.log('decryptPasswordAction: secret...', secret);
     if (secret.length > 0) {
       _username = decryptCipher(fields.accountCipher, secret);
       _password = decryptCipher(fields.passwordCipher, secret);
@@ -248,26 +237,26 @@ function Edit() {
           };
         });
         if (decryptError) setDecryptError(false);
-        setIsUnlocked(true);
+        setIsLocked(false);
       } else {
         // console.log('Decryption failed');
         if (!decryptError) setDecryptError(true);
-        if (isUnlocked) setIsUnlocked(false);
-        setFields({ ...fields, accountSecret: '' });
-        secretEl.current.focus();
+        if (!isLocked) setIsLocked(true);
+        setSecret('');
+        secretRef.current.focus();
       }
     } else {
       if (!decryptError) setDecryptError(true);
-      if (isUnlocked) setIsUnlocked(false);
-      secretEl.current.focus();
+      if (!isLocked) setIsLocked(true);
+      secretRef.current.focus();
     }
   };
 
   const patternFinishAction = () => {
-    console.log('patternFinishAction: patternPath...', patternPath);
+    // console.log('patternFinishAction: patternPath...', patternPath);
     if (patternPath.length > 0) {
       const pattern = patternPath.join('-');
-      setFields({ ...fields, accountSecret: pattern });
+      setSecret(pattern);
       setDialogOpen(false);
       decryptPasswordAction(pattern);
     }
@@ -276,12 +265,6 @@ function Edit() {
   const deletePasswordAction = () => {
     deletePassword(passwordId);
     rrNavigate(-1);
-    // setFields({ ...initialFieldData, passwordId: uuidv1() });
-    // if (!isUnlocked) setIsUnlocked(true);
-    // if (!isSaved) setIsSaved(true);
-    // setTimeout(() => {
-    //   rrNavigate('/edit/new', { replace: true });
-    // }, 800);
   };
   /*
    * ACTION helpers
@@ -294,21 +277,21 @@ function Edit() {
         <Typography variant="h6" sx={{ mt: 2 }}>{routeHeader}</Typography>
         <Paper sx={{ mt: 2, p: 2 }}>
           <Stack spacing={2}>
-            <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockButton}>
+            <Box component="form" noValidate onSubmit={handleUnlockButton}>
               <Stack spacing={smallScreen ? 1 : 2} direction="row" alignItems="center">
                 <TextField
-                  error={decryptError}
+                  fullWidth
                   label="Secret"
                   variant="outlined"
                   type="password"
-                  name="accountSecret"
-                  value={fields.accountSecret}
-                  onChange={handleFieldChange}
-                  fullWidth
-                  inputRef={secretEl}
+                  autoComplete="new-password"
+                  inputRef={secretRef}
+                  value={secret}
+                  error={decryptError}
+                  onChange={handleSecretChange}
                 />
                 <IconButton
-                  color={patternSuccess ? 'success' : 'primary'}
+                  // color={patternSuccess ? 'success' : 'primary'}
                   variant="outlined"
                   onClick={handlePatternButton}
                 ><PatternIcon /></IconButton>
@@ -316,7 +299,7 @@ function Edit() {
                 <Button
                   onClick={handleUnlockButton}
                   variant="outlined"
-                  disabled={isUnlocked}
+                  disabled={!isLocked}
                 >Unlock</Button>
               </Stack>
             </Box>
@@ -325,7 +308,7 @@ function Edit() {
               variant="outlined"
               name="passwordTitle"
               autoComplete="off"
-              disabled={!isUnlocked}
+              disabled={isLocked}
               value={fields.passwordTitle}
               onChange={handleFieldChange}
               fullWidth
@@ -335,7 +318,7 @@ function Edit() {
               variant="outlined"
               name="accountName"
               autoComplete="off"
-              disabled={!isUnlocked}
+              disabled={isLocked}
               value={fields.accountName}
               onChange={handleFieldChange}
               fullWidth
@@ -348,18 +331,18 @@ function Edit() {
                 type={showPassword ? 'text' : 'password'}
                 // https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion#the_autocomplete_attribute_and_login_fields
                 autoComplete="new-password"
-                disabled={!isUnlocked}
+                disabled={isLocked}
                 value={fields.accountPassword}
                 onChange={handleFieldChange}
                 fullWidth
               />
               <IconButton
                 onClick={() => setShowPassword(!showPassword)}
-                disabled={!isUnlocked}
+                disabled={isLocked}
               >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
               <IconButton
                 onClick={handleKeyButton}
-                disabled={!isUnlocked}
+                disabled={isLocked}
               ><KeyIcon /></IconButton>
             </Stack>
             <TextField
@@ -428,8 +411,6 @@ function Edit() {
                 path={patternPath}
                 connectorThickness={5}
                 disabled={false}
-                success={patternSuccess}
-                error={patternError}
                 onChange={(pattern) => {
                   setPatternPath(pattern);
                 }}
@@ -455,8 +436,6 @@ function Edit() {
                 path={patternPath}
                 connectorThickness={5}
                 disabled={false}
-                success={patternSuccess}
-                error={patternError}
                 onChange={(pattern) => {
                   setPatternPath(pattern);
                 }}

@@ -152,6 +152,7 @@ export const getPasswordById = (passwordId) => {
   let response = { statusOK: false, data: {} };
   try {
     const passwords = JSON.parse(localStorage.getItem(storageItems.passwords));
+    // console.log('getPasswordById: passwords...', passwords);
     if (passwords) {
       response = {
         statusOK: true,

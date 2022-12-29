@@ -7,13 +7,17 @@ import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import PatternIcon from '@mui/icons-material/Pattern';
 
 import PasswordCard from '../components/PasswordCard';
+import PatternLock from '../components/patternlock/PatternLock';
+
 import { AppContext } from '../context/AppStore';
 import { dateToString, decryptCipher, copyToClipboard } from '../helpers/utilities';
 import { getPasswords, getPasswordById, updateLastClicked, getSettings } from '../helpers/localstorage';
@@ -32,8 +36,9 @@ const initialAccount = { username: '', password: '' };
 function Home() {
   const rrNavidate = useNavigate();
   // https://stackoverflow.com/questions/59647940/how-can-i-use-ref-in-textfield
-  const secretEl = useRef(null);
+  const secretRef = useRef(null);
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
+  const isDark = !getSettings().data.themeIsDark
   const [appState,] = useContext(AppContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [account, setAccount] = useState(initialAccount);
@@ -43,6 +48,10 @@ function Home() {
   const [passwordIdUnlocked, setPasswordIdUnlocked] = useState('');
   const [passwordUnlockSecret, setPasswordUnlockSecret] = useState('');
   const [decryptError, setDecryptError] = useState(false);
+  const [isPatternMode, setIsPatternMode] = useState(false);
+  const [patternPath, setPatternPath] = useState([]);
+  const [patternSuccess, setPatternSuccess] = useState(false);
+  const [patternError, setPatternError] = useState(false);
 
   // Create a memorized password list
   const memorizedPasswords = useMemo(() => {
@@ -63,15 +72,21 @@ function Home() {
   const handleDialogOpen = () => {
     setDialogOpen(true);
     // Wait for dialog component to render
-    // else secretEl is undefined
-    setTimeout(() => {
-      secretEl.current.focus();
-    }, 500);
+    // else secretRef is undefined
+    // console.log(secretRef.current);
+    // Since adding the pattern option
+    // useRef doesn't work as expected.
+    // if (secretRef.current) {
+    //   setTimeout(() => {
+    //     secretRef.current.focus();
+    //   }, 500);
+    // }
   };
 
   // Manage dialog state
   const handleDialogClose = () => {
     setDecryptError(false);
+    setPatternPath([]);
     setPasswordUnlockSecret('');
     setDialogOpen(false);
   };
@@ -104,6 +119,18 @@ function Home() {
     handleDialogOpen();
   };
 
+  const handlePatternButton = () => {
+    if (isPatternMode) {
+      setPatternPath([]);
+      setPasswordUnlockSecret('');
+    }
+    setIsPatternMode(!isPatternMode);
+  };
+
+  const handlePatternFinish = () => {
+    // patternPath.join('-')
+  };
+
   const handleUnlockConfirm = (e) => {
     e.preventDefault();
     let _username = { ok: false, message: '', value: '' };
@@ -126,13 +153,13 @@ function Home() {
       } else {
         // console.log('Decryption failed');
         setDecryptError(true);
-        secretEl.current.focus();
+        if (secretRef.current) secretRef.current.focus();
         setPasswordUnlockSecret('');
       }
     } else {
       // console.log('Invalid secret');
       setDecryptError(true);
-      secretEl.current.focus();
+      if (secretRef.current) secretRef.current.focus();
     }
   };
 
@@ -168,23 +195,43 @@ function Home() {
       <Dialog open={dialogOpen} onClose={handleDialogClose} aria-labelledby="alert-dialog-title">
         <DialogTitle id="alert-dialog-title" textAlign="center">Unlock Password</DialogTitle>
         <DialogContent>
-          <Box component="form" noValidate autoComplete="off" onSubmit={handleUnlockConfirm}>
-            <TextField
-              inputRef={secretEl}
-              sx={{ mt: 2 }}
-              error={decryptError}
-              label="Secret"
-              variant="outlined"
-              type="password"
-              value={passwordUnlockSecret}
-              onChange={e => setPasswordUnlockSecret(e.currentTarget.value)}
-              fullWidth
+          {isPatternMode ? (
+            <PatternLock
+              isDark={isDark}
+              width={250}
+              pointSize={20}
+              size={3}
+              path={patternPath}
+              connectorThickness={5}
+              disabled={false}
+              success={patternSuccess}
+              error={patternError}
+              onChange={(pattern) => {
+                setPatternPath(pattern);
+              }}
+              onFinish={handlePatternFinish}
             />
-          </Box>
+          ) : (
+            <Box component="form" noValidate onSubmit={handleUnlockConfirm}>
+              <TextField
+                inputRef={secretRef}
+                sx={{ mt: 2 }}
+                error={decryptError}
+                label="Secret"
+                variant="outlined"
+                type="password"
+                autoComplete="new-password"
+                value={passwordUnlockSecret}
+                onChange={e => setPasswordUnlockSecret(e.currentTarget.value)}
+                fullWidth
+              />
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} fullWidth variant="outlined">Close</Button>
-          <Button onClick={handleUnlockConfirm} fullWidth variant="outlined">Unlock</Button>
+          <IconButton onClick={handlePatternButton}><PatternIcon /></IconButton>
+          <Button onClick={handleUnlockConfirm} fullWidth variant="outlined" disabled={isPatternMode}>Unlock</Button>
         </DialogActions>
       </Dialog>
     </>
