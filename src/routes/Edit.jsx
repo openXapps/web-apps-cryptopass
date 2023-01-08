@@ -406,7 +406,7 @@ function Edit() {
               <PatternLock
                 isDark={isDark}
                 width={250}
-                pointSize={20}
+                pointSize={30}
                 size={3}
                 path={patternPath}
                 connectorThickness={5}

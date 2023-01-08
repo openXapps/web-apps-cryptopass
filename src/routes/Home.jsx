@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import PatternIcon from '@mui/icons-material/Pattern';
+import PasswordIcon from '@mui/icons-material/Password';
 
 import PasswordCard from '../components/PasswordCard';
 import PatternLock from '../components/patternlock/PatternLock';
@@ -50,7 +51,7 @@ function Home() {
   const [decryptError, setDecryptError] = useState(false);
   const [isPatternMode, setIsPatternMode] = useState(false);
   const [patternPath, setPatternPath] = useState([]);
-  const [patternSuccess, setPatternSuccess] = useState(false);
+  // const [patternSuccess, setPatternSuccess] = useState(false);
   const [patternError, setPatternError] = useState(false);
 
   // Create a memorized password list
@@ -67,29 +68,6 @@ function Home() {
     setPasswords(memorizedPasswords);
     return () => true
   }, [memorizedPasswords]);
-
-  // Manage dialog state
-  const handleDialogOpen = () => {
-    setDialogOpen(true);
-    // Wait for dialog component to render
-    // else secretRef is undefined
-    // console.log(secretRef.current);
-    // Since adding the pattern option
-    // useRef doesn't work as expected.
-    // if (secretRef.current) {
-    //   setTimeout(() => {
-    //     secretRef.current.focus();
-    //   }, 500);
-    // }
-  };
-
-  // Manage dialog state
-  const handleDialogClose = () => {
-    setDecryptError(false);
-    setPatternPath([]);
-    setPasswordUnlockSecret('');
-    setDialogOpen(false);
-  };
 
   const handlePasswordSettings = (e) => {
     rrNavidate(`/edit/${e.currentTarget.dataset.id}`);
@@ -119,6 +97,31 @@ function Home() {
     handleDialogOpen();
   };
 
+
+  /*
+   * DIALOG handlers starts
+   ***********************************************************************************/
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+    // Wait for dialog component to render
+    // else secretRef is undefined
+    // Since adding the pattern option
+    // useRef doesn't work as expected.
+    // if (secretRef.current) {
+    //   setTimeout(() => {
+    //     secretRef.current.focus();
+    //   }, 500);
+    // }
+  };
+
+  const handleDialogClose = () => {
+    setDecryptError(false);
+    setPatternPath([]);
+    setPasswordUnlockSecret('');
+    setDialogOpen(false);
+  };
+
   const handlePatternButton = () => {
     if (isPatternMode) {
       setPatternPath([]);
@@ -128,17 +131,36 @@ function Home() {
   };
 
   const handlePatternFinish = () => {
-    // patternPath.join('-')
+    if (doUnlockAction(patternPath.join('-'))) {
+      handleDialogClose();
+    } else {
+      setPatternError(true);
+      setTimeout(() => {
+        setPatternError(false);
+        setPatternPath([]);
+      }, 500);
+    }
   };
 
-  const handleUnlockConfirm = (e) => {
+  const handleUnlockFormSubmit = (e) => {
     e.preventDefault();
+    if (doUnlockAction(passwordUnlockSecret)) {
+      handleDialogClose();
+    } else {
+      setDecryptError(true);
+      setPasswordUnlockSecret('');
+      if (secretRef.current) secretRef.current.focus();
+    }
+  };
+
+  const doUnlockAction = (secret) => {
+    let result = false;
     let _username = { ok: false, message: '', value: '' };
     let _password = { ok: false, message: '', value: '' };
-    // console.log('passwordUnlockSecret...', passwordUnlockSecret);
-    if (passwordUnlockSecret.length > 0) {
-      _username = decryptCipher(password.accountCipher, passwordUnlockSecret);
-      _password = decryptCipher(password.passwordCipher, passwordUnlockSecret);
+    // console.log('secret...', secret);
+    if (secret.length > 0) {
+      _username = decryptCipher(password.accountCipher, secret);
+      _password = decryptCipher(password.passwordCipher, secret);
       // console.log('_username...', _username);
       // console.log('_password...', _password);
       if (_username.ok && _password.ok) {
@@ -149,19 +171,15 @@ function Home() {
         });
         setPasswordIdUnlocked(passwordIdToBeUnlocked);
         updateLastClicked(password.passwordId);
-        handleDialogClose();
-      } else {
-        // console.log('Decryption failed');
-        setDecryptError(true);
-        if (secretRef.current) secretRef.current.focus();
-        setPasswordUnlockSecret('');
+        result = true;
       }
-    } else {
-      // console.log('Invalid secret');
-      setDecryptError(true);
-      if (secretRef.current) secretRef.current.focus();
     }
-  };
+    return result;
+  }
+
+  /************************************************************************************
+   * DIALOG handlers ends
+   */
 
   return (
     <>
@@ -199,12 +217,12 @@ function Home() {
             <PatternLock
               isDark={isDark}
               width={250}
-              pointSize={20}
+              pointSize={30}
               size={3}
               path={patternPath}
               connectorThickness={5}
               disabled={false}
-              success={patternSuccess}
+              success={false}
               error={patternError}
               onChange={(pattern) => {
                 setPatternPath(pattern);
@@ -212,7 +230,7 @@ function Home() {
               onFinish={handlePatternFinish}
             />
           ) : (
-            <Box component="form" noValidate onSubmit={handleUnlockConfirm}>
+            <Box component="form" noValidate onSubmit={handleUnlockFormSubmit}>
               <TextField
                 inputRef={secretRef}
                 sx={{ mt: 2 }}
@@ -230,8 +248,8 @@ function Home() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} fullWidth variant="outlined">Close</Button>
-          <IconButton onClick={handlePatternButton}><PatternIcon /></IconButton>
-          <Button onClick={handleUnlockConfirm} fullWidth variant="outlined" disabled={isPatternMode}>Unlock</Button>
+          <IconButton onClick={handlePatternButton}>{isPatternMode ? <PasswordIcon /> : <PatternIcon />}</IconButton>
+          <Button onClick={handleUnlockFormSubmit} fullWidth variant="outlined" disabled={isPatternMode}>Unlock</Button>
         </DialogActions>
       </Dialog>
     </>
