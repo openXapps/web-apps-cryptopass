@@ -185,7 +185,7 @@ function Home() {
     <>
       <Container maxWidth="md">
         <Toolbar />
-        <Box mt={2}>
+        <Box my={2}>
           <Grid container spacing={2}>
             {passwords.map(v => {
               return (

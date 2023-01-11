@@ -40,7 +40,7 @@ function Download() {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Toolbar />
       <Typography variant="h6" sx={{ mt: spacing }}>Backup My Passwords</Typography>
       <Paper sx={{ mt: spacing, p: spacing }}>

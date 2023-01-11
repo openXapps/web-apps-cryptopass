@@ -77,7 +77,7 @@ function Upload() {
   }
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Toolbar />
       <Box mt={spacing} mr={spacing}>
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
