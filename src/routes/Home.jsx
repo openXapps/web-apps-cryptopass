@@ -5,16 +5,14 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import PatternIcon from '@mui/icons-material/Pattern';
-import PasswordIcon from '@mui/icons-material/Password';
 
 import PasswordCard from '../components/PasswordCard';
 import PatternLock from '../components/patternlock/PatternLock';
@@ -49,7 +47,6 @@ function Home() {
   const [passwordIdUnlocked, setPasswordIdUnlocked] = useState('');
   const [passwordUnlockSecret, setPasswordUnlockSecret] = useState('');
   const [decryptError, setDecryptError] = useState(false);
-  const [isPatternMode, setIsPatternMode] = useState(false);
   const [patternPath, setPatternPath] = useState([]);
   // const [patternSuccess, setPatternSuccess] = useState(false);
   const [patternError, setPatternError] = useState(false);
@@ -104,15 +101,9 @@ function Home() {
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
-    // Wait for dialog component to render
-    // else secretRef is undefined
-    // Since adding the pattern option
-    // useRef doesn't work as expected.
-    // if (secretRef.current) {
-    //   setTimeout(() => {
-    //     secretRef.current.focus();
-    //   }, 500);
-    // }
+    setTimeout(() => {
+      if (secretRef.current) secretRef.current.focus();
+    }, 500);
   };
 
   const handleDialogClose = () => {
@@ -120,14 +111,6 @@ function Home() {
     setPatternPath([]);
     setPasswordUnlockSecret('');
     setDialogOpen(false);
-  };
-
-  const handlePatternButton = () => {
-    if (isPatternMode) {
-      setPatternPath([]);
-      setPasswordUnlockSecret('');
-    }
-    setIsPatternMode(!isPatternMode);
   };
 
   const handlePatternFinish = () => {
@@ -213,43 +196,40 @@ function Home() {
       <Dialog open={dialogOpen} onClose={handleDialogClose} aria-labelledby="alert-dialog-title">
         <DialogTitle id="alert-dialog-title" textAlign="center">Unlock Password</DialogTitle>
         <DialogContent>
-          {isPatternMode ? (
-            <PatternLock
-              isDark={isDark}
-              width={250}
-              pointSize={30}
-              size={3}
-              path={patternPath}
-              connectorThickness={5}
-              disabled={false}
-              success={false}
-              error={patternError}
-              onChange={(pattern) => {
-                setPatternPath(pattern);
-              }}
-              onFinish={handlePatternFinish}
+          <PatternLock
+            isDark={isDark}
+            width={250}
+            pointSize={30}
+            size={3}
+            path={patternPath}
+            connectorThickness={5}
+            disabled={false}
+            success={false}
+            error={patternError}
+            onChange={(pattern) => {
+              setPatternPath(pattern);
+            }}
+            onFinish={handlePatternFinish}
+          />
+          <Typography sx={{ textAlign: 'center' }}>OR</Typography>
+          <Box component="form" noValidate onSubmit={handleUnlockFormSubmit}>
+            <TextField
+              inputRef={secretRef}
+              sx={{ mt: 2 }}
+              error={decryptError}
+              label="Secret"
+              variant="outlined"
+              type="password"
+              autoComplete="new-password"
+              value={passwordUnlockSecret}
+              onChange={e => setPasswordUnlockSecret(e.currentTarget.value)}
+              fullWidth
             />
-          ) : (
-            <Box component="form" noValidate onSubmit={handleUnlockFormSubmit}>
-              <TextField
-                inputRef={secretRef}
-                sx={{ mt: 2 }}
-                error={decryptError}
-                label="Secret"
-                variant="outlined"
-                type="password"
-                autoComplete="new-password"
-                value={passwordUnlockSecret}
-                onChange={e => setPasswordUnlockSecret(e.currentTarget.value)}
-                fullWidth
-              />
-            </Box>
-          )}
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} fullWidth variant="outlined">Close</Button>
-          <IconButton onClick={handlePatternButton}>{isPatternMode ? <PasswordIcon /> : <PatternIcon />}</IconButton>
-          <Button onClick={handleUnlockFormSubmit} fullWidth variant="outlined" disabled={isPatternMode}>Unlock</Button>
+          <Button onClick={handleUnlockFormSubmit} fullWidth variant="outlined">Unlock</Button>
         </DialogActions>
       </Dialog>
     </>
