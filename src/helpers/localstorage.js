@@ -1,3 +1,4 @@
+import fuzzysearch from 'fuzzysearch'
 import { cryptopassSettings, storageItems } from '../config/defaults';
 
 /**
@@ -51,7 +52,8 @@ export const getPasswords = (search) => {
         response = {
           statusOK: true,
           data: passwords.filter((v) => {
-            return (v.passwordTitle.toLowerCase().indexOf(search.toLowerCase()) > -1);
+            return (fuzzysearch(search.toLowerCase(), v.passwordTitle.toLowerCase()));
+            // return (v.passwordTitle.toLowerCase().indexOf(search.toLowerCase()) > -1);
           }).sort((a, b) => (b.passwordTitle < a.passwordTitle) ? 1 : -1)
         }
       } else {
