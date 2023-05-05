@@ -3,29 +3,23 @@ const light = {
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          background: 'linear-gradient(145deg, #FFF5CC, #414427) no-repeat fixed',
+          // background: 'linear-gradient(145deg, #FFF5CC, #414427) no-repeat fixed',
+          background: 'linear-gradient(145deg, rgba(239,239,247,1) 0%, rgba(171,171,191,1) 35%, rgba(20,20,23,1) 100%) no-repeat fixed',
         },
       },
     },
   },
   palette: {
     mode: 'light',
-    // primary: {
-    //   main: '#eceff1',
-    //   light: '#ffffff',
-    //   dark: '#babdbe',
-    //   contrastText: '#000000',
-    // },
-    // secondary: {
-    //   main: '#fbe9e7',
-    //   light: '#ffffff',
-    //   dark: '#c8b7b5',
-    //   contrastText: '#000000',
-    // },
-    // background: {
-    //   default: '#e0e0e0',
-    //   paper: '#d3dbdf',
-    // },
+    primary: {
+      main: '#3f51b5',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+    background: {
+      paper: '#ECEFF1',
+    },
   },
 };
 
