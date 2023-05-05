@@ -190,6 +190,7 @@ function Edit() {
         setSecret('');
         setIsSaved(true);
         setIsLocked(true);
+        if (showPassword) setShowPassword(false);
       } else {
         addPassword(passwordToSave);
         rrNavigate(-1);
