@@ -78,7 +78,7 @@ function PasswordCard(props) {
               <Button
                 size="small"
                 fullWidth
-                variant="outlined"
+                variant="contained"
                 color={isActive ? 'warning' : 'info'}
                 onClick={props.handleCopyUserName}
                 data-id={props.passwordId}
@@ -86,7 +86,7 @@ function PasswordCard(props) {
               <Button
                 size="small"
                 fullWidth
-                variant="outlined"
+                variant="contained"
                 color={isActive ? 'warning' : 'secondary'}
                 onClick={props.handleCopyPassword}
                 data-id={props.passwordId}
