@@ -56,16 +56,7 @@ function PasswordCard(props) {
             </Grid>
           </CardContent>
         )}
-        {!isActive ? (null
-          // <Button
-          //   sx={{ mb: 1, mx: 1 }}
-          //   size="small"
-          //   fullWidth
-          //   variant="outlined"
-          //   onClick={props.handleUnlockButton}
-          //   data-id={props.passwordId}
-          // >Unlock Password</Button>
-        ) : (
+        {!isActive ? (null) : (
           <CardActions>
             <Stack
               spacing={{ xs: 1, md: 2 }}
