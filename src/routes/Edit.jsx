@@ -349,14 +349,14 @@ function Edit() {
             <TextField
               label="Last Changed"
               variant="outlined"
-              value={dateToString(fields.lastChanged, true)}
+              value={dateToString(fields.lastChanged, true, 'R')}
               disabled
               fullWidth
             />
             <TextField
               label="Last Used"
               variant="outlined"
-              value={dateToString(fields.lastUsed, true)}
+              value={dateToString(fields.lastUsed, true, 'R')}
               disabled
               fullWidth
             />

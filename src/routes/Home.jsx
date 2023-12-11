@@ -176,8 +176,8 @@ function Home() {
                   key={v.passwordId}
                   passwordId={v.passwordId}
                   passwordTitle={v.passwordTitle}
-                  lastUsed={dateToString(v.lastUsed, true)}
-                  lastChanged={dateToString(v.lastChanged, true)}
+                  lastUsed={dateToString(v.lastUsed, true, 'L')}
+                  lastChanged={dateToString(v.lastChanged, true, 'L')}
                   smallScreen={smallScreen}
                   passwordIdUnlocked={passwordIdUnlocked}
                   passwordListIsDense={getSettings().data.passwordListIsDense}

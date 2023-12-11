@@ -5,11 +5,15 @@ import CryptoJs from 'crypto-js';
  * Helper function to return date and time in user local
  * @param {date} dIn Date to process
  * @param {boolean} showTime Show or hide time
+ * @param {string} showDays Show or hide days (L=left, R=right, H=hide)
  * @returns Date object in user local
  */
-export const dateToString = (dIn, showTime) => {
+export const dateToString = (dIn, showTime, showDays) => {
   // console.log('userDate: dIn....', dIn);
   let dOut = '';
+  let diffInTime = 0;
+  let diffInDays = 0;
+  let today = new Date();
   const d = dIn ? new Date(dIn) : new Date();
   // console.log('userDate: d......', d);
   dOut = d.getFullYear() + '-';
@@ -18,6 +22,13 @@ export const dateToString = (dIn, showTime) => {
   if (showTime) {
     dOut += ' ' + String(d.getHours()).padStart(2, 0) + ':';
     dOut += String(d.getMinutes()).padStart(2, 0);
+  }
+  if (showDays !== null) {
+    diffInTime = today.getTime() - d.getTime();
+    diffInDays = Math.round(diffInTime / (1000 * 3600 * 24));
+    // console.log(diffInDays);
+    if(showDays === 'L') dOut = `(${diffInDays}d) ${dOut}`;
+    if(showDays === 'R') dOut = `${dOut} (${diffInDays}d)`;
   }
   // console.log('userDate: dOut...', dOut);
   return dOut;
