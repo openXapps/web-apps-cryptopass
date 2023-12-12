@@ -46,10 +46,12 @@ function Home() {
   const [passwordIdToBeUnlocked, setPasswordIdToBeUnlocked] = useState('');
   const [passwordIdUnlocked, setPasswordIdUnlocked] = useState('');
   const [passwordUnlockSecret, setPasswordUnlockSecret] = useState('');
+  const [usernameCopied, setUsernameCopied] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
   const [decryptError, setDecryptError] = useState(false);
   const [patternPath, setPatternPath] = useState([]);
-  // const [patternSuccess, setPatternSuccess] = useState(false);
   const [patternError, setPatternError] = useState(false);
+  // const [patternSuccess, setPatternSuccess] = useState(false);
 
   // Create a memorized password list
   const memorizedPasswords = useMemo(() => {
@@ -73,11 +75,15 @@ function Home() {
   const handleCopyUserName = () => {
     // console.log('handleCopyUserName: username........', account.username);
     copyToClipboard(account.username);
+    setUsernameCopied(true);
+    passwordCopied && setPasswordCopied(false);
   };
 
   const handleCopyPassword = () => {
     // console.log('handleCopyPassword: password........', account.password);
     copyToClipboard(account.password);
+    setPasswordCopied(true);
+    usernameCopied && setUsernameCopied(false);
   };
 
   const handleLockButton = () => {
@@ -85,12 +91,16 @@ function Home() {
     setAccount(initialAccount);
     setPasswordIdUnlocked('');
     setPasswordIdToBeUnlocked('');
+    usernameCopied && setUsernameCopied(false);
+    passwordCopied && setPasswordCopied(false);
   };
 
   const handleUnlockButton = (e) => {
     setPassword(getPasswordById(e.currentTarget.dataset.id).data[0]);
     setPasswordIdToBeUnlocked(e.currentTarget.dataset.id);
     setAccount(initialAccount);
+    usernameCopied && setUsernameCopied(false);
+    passwordCopied && setPasswordCopied(false);
     handleDialogOpen();
   };
 
@@ -181,6 +191,8 @@ function Home() {
                   smallScreen={smallScreen}
                   passwordIdUnlocked={passwordIdUnlocked}
                   passwordListIsDense={getSettings().data.passwordListIsDense}
+                  usernameCopied={usernameCopied}
+                  passwordCopied={passwordCopied}
                   handleCopyUserName={handleCopyUserName}
                   handleCopyPassword={handleCopyPassword}
                   handlePasswordSettings={handlePasswordSettings}

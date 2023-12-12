@@ -1,3 +1,4 @@
+// MUI components
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -7,11 +8,15 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
+
+// MUI icons
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import ContentCopy from '@mui/icons-material/ContentCopy';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 
-function PasswordCard(props) {
+export default function PasswordCard(props) {
   const isActive = props.passwordId === props.passwordIdUnlocked;
   const titleColor = isActive ? 'text.primary' : 'text.secondary';
   // const titleSize = props.smallScreen ? 'body1.fontSize' : props.passwordListIsDense ? 'h6' : '1.1rem';
@@ -71,6 +76,8 @@ function PasswordCard(props) {
                 fullWidth
                 variant="contained"
                 color={isActive ? 'warning' : 'info'}
+                startIcon={props.usernameCopied ? <CheckCircleOutline /> : <ContentCopy />}
+                disabled={props.usernameCopied}
                 onClick={props.handleCopyUserName}
                 data-id={props.passwordId}
               >Copy User Name</Button>
@@ -79,6 +86,8 @@ function PasswordCard(props) {
                 fullWidth
                 variant="contained"
                 color={isActive ? 'warning' : 'secondary'}
+                startIcon={props.passwordCopied ? <CheckCircleOutline /> : <ContentCopy />}
+                disabled={props.passwordCopied}
                 onClick={props.handleCopyPassword}
                 data-id={props.passwordId}
               >Copy Password</Button>
@@ -89,5 +98,3 @@ function PasswordCard(props) {
     </Grid >
   );
 }
-
-export default PasswordCard;

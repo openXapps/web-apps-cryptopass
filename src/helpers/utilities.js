@@ -35,6 +35,11 @@ export const dateToString = (dIn, showTime, showDays) => {
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API
+/**
+ * Helper function to copy a string to memory
+ * @param {string} text String to copy into memory
+ * @returns Boolean of success or failed
+ */
 export const copyToClipboard = async (text) => {
   let response = false;
   // Doesn't work on IP URL, only localhost and HTTPS
@@ -42,7 +47,6 @@ export const copyToClipboard = async (text) => {
   await navigator.clipboard.writeText(text)
     .then(() => { response = true })
     .catch((error) => (response = false));
-
   return response;
 };
 

@@ -340,7 +340,7 @@ function Edit() {
               <IconButton
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLocked}
-              >{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+              >{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
               <IconButton
                 onClick={handleKeyButton}
                 disabled={isLocked}
