@@ -14,17 +14,7 @@ export const storageItems = {
  */
 export const cryptopassSettings = {
   // Remember to update package.json with version
-  version: '0.1.9',
-  // version: '0.1.8',
-  // version: '0.1.7',
-  // version: '0.1.6',
-  // version: '0.1.5',
-  // version: '0.1.4',
-  // version: '0.1.3',
-  // version: '0.1.2',
-  // version: '0.1.1',
-  // version: '0.1.0',
-  // themeIsDark: false,
+  version: process.env.REACT_APP_VERSION,
   themeIsDark: true,
   confirmOnDelete: true,
   passwordLengthMarker: 10,
