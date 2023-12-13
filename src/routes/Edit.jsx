@@ -295,12 +295,14 @@ function Edit() {
                   // color={patternSuccess ? 'success' : 'primary'}
                   variant="outlined"
                   onClick={handlePatternButton}
+                  aria-label="open pattern lock dialog"
                 ><PatternIcon /></IconButton>
                 <Divider orientation="vertical" flexItem />
                 <Button
                   onClick={handleUnlockButton}
                   variant="outlined"
                   disabled={!isLocked}
+                  aria-label="unlock account"
                 >Unlock</Button>
               </Stack>
             </Box>
@@ -340,10 +342,12 @@ function Edit() {
               <IconButton
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLocked}
+                aria-label="show or hide password"
               >{showPassword ? <Visibility /> : <VisibilityOff />}</IconButton>
               <IconButton
                 onClick={handleKeyButton}
                 disabled={isLocked}
+                aria-label="generate a new password"
               ><KeyIcon /></IconButton>
             </Stack>
             <TextField
@@ -367,6 +371,7 @@ function Edit() {
               fullWidth
               onClick={handleSaveButton}
               disabled={isSaved}
+              aria-label="save account"
             >Save</Button>
             <Button
               color="warning"
@@ -374,11 +379,13 @@ function Edit() {
               fullWidth
               onClick={handleDeleteButton}
               disabled={editMode === 'NEW'}
+              aria-label="delete account"
             >Delete</Button>
             <Button
               variant="outlined"
               fullWidth
               onClick={() => rrNavigate(-1)}
+              aria-label="navigate back"
             >Back</Button>
           </Stack>
         </Paper>
@@ -392,8 +399,8 @@ function Edit() {
               <Typography>Password record will be permanently deleted. Are you sure?</Typography>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleDeleteYesButton} fullWidth variant="outlined">Yes</Button>
-              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">No</Button>
+              <Button onClick={handleDeleteYesButton} fullWidth variant="outlined" aria-label="delete account yes">Yes</Button>
+              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined" aria-label="delete account no">No</Button>
             </DialogActions>
           </>
         )}
@@ -419,9 +426,9 @@ function Edit() {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">Cancel</Button>
-              <Button onClick={() => patternPath.length > 0 && setPatternPath([])} fullWidth variant="outlined">Reset</Button>
-              <Button onClick={handlePatternSaveButton} fullWidth variant="outlined">Save</Button>
+              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined" aria-label="pattern lock exit">Cancel</Button>
+              <Button onClick={() => patternPath.length > 0 && setPatternPath([])} fullWidth variant="outlined" aria-label="pattern lock reset">Reset</Button>
+              <Button onClick={handlePatternSaveButton} fullWidth variant="outlined" aria-label="pattern lock save">Save</Button>
             </DialogActions>
           </>
         )}
@@ -444,7 +451,7 @@ function Edit() {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined">Cancel</Button>
+              <Button onClick={() => setDialogOpen(false)} fullWidth variant="outlined" aria-label="pattern lock exit">Cancel</Button>
             </DialogActions>
           </>
         )}

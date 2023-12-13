@@ -92,15 +92,18 @@ function Header() {
               <IconButton
                 color="inherit"
                 onClick={() => { rrNavigate('/edit/new') }}
+                aria-label="navigate to new account"
               ><AddCircleIcon /></IconButton>
               <IconButton
                 color="inherit"
                 onClick={() => { rrNavigate('/settings') }}
+                aria-label="navigate to settings"
               ><SettingsIcon /></IconButton>
               <IconButton
                 color="inherit"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
+                aria-label="menu options"
                 onClick={handleMenuToggle}
               ><MenuIcon /></IconButton>
               <Menu
@@ -112,9 +115,9 @@ function Header() {
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
               >
-                <MenuItem onClick={handleRoute} data-name='settings'>Settings</MenuItem>
-                <MenuItem onClick={handleRoute} data-name='download'>Backup Passwords</MenuItem>
-                <MenuItem onClick={handleRoute} data-name='upload'>Restore Passwords</MenuItem>
+                <MenuItem onClick={handleRoute} data-name='settings' aria-label="navigate to settings">Settings</MenuItem>
+                <MenuItem onClick={handleRoute} data-name='download' aria-label="navigate to data backup">Backup Passwords</MenuItem>
+                <MenuItem onClick={handleRoute} data-name='upload' aria-label="navigate to data restore">Restore Passwords</MenuItem>
               </Menu>
             </Box>
           ) : (null)}

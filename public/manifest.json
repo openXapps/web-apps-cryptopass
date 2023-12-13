@@ -4,22 +4,62 @@
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "128x128",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "logo_x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "logo_x512.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "logo_x640.png",
+      "type": "image/png",
+      "sizes": "640x640",
+      "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "id": "/apps/cryptopass/",
+  "start_url": "/apps/cryptopass/",
+  "scope": "/apps/cryptopass/",
   "display": "standalone",
   "theme_color": "#000000",
-  "background_color": "#eceff1"
+  "background_color": "#eceff1",
+  "screenshots": [
+    {
+      "src": "screenshot_1.png",
+      "sizes": "640x1138",
+      "type": "image/png",
+      "label": "Mobile App",
+      "description": "Safe and secure password manager."
+    },
+    {
+      "src": "screenshot_2.png",
+      "sizes": "640x1138",
+      "type": "image/png",
+      "label": "Pattern Lock",
+      "description": "Unlock with pattern or secret phrase."
+    },
+    {
+      "src": "screenshot_3_wide.png",
+      "sizes": "800x650",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Destop App",
+      "description": "Safe and secure password manager."
+    },
+    {
+      "src": "screenshot_4_wide.png",
+      "sizes": "800x650",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Pattern Lock",
+      "description": "Unlock with pattern or secret phrase."
+    }
+  ]
 }

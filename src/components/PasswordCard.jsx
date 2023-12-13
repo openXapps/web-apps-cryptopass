@@ -37,16 +37,19 @@ export default function PasswordCard(props) {
                 <IconButton
                   onClick={props.handleLockButton}
                   data-id={props.passwordId}
+                  aria-label="unlock account"
                 ><LockOpenIcon /></IconButton>
               ) : (
                 <IconButton
                   onClick={props.handleUnlockButton}
                   data-id={props.passwordId}
+                  aria-label="lock account"
                 ><LockIcon /></IconButton>
               )}
               <IconButton
                 onClick={props.handlePasswordSettings}
                 data-id={props.passwordId}
+                aria-label="edit account"
               ><MoreVertIcon /></IconButton>
             </>
           }
@@ -72,6 +75,7 @@ export default function PasswordCard(props) {
               mx={1}
             >
               <Button
+                aria-label="copy user name"
                 size="small"
                 fullWidth
                 variant="contained"
@@ -82,6 +86,7 @@ export default function PasswordCard(props) {
                 data-id={props.passwordId}
               >Copy User Name</Button>
               <Button
+                aria-label="copy password"
                 size="small"
                 fullWidth
                 variant="contained"
