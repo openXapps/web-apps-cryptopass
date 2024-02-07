@@ -80,22 +80,22 @@ export default function PasswordCard(props) {
                 fullWidth
                 variant="contained"
                 color={isActive ? 'warning' : 'info'}
-                startIcon={props.usernameCopied ? <CheckCircleOutline /> : <ContentCopy />}
-                disabled={props.usernameCopied}
+                endIcon={props.usernameCopied ? <CheckCircleOutline /> : <ContentCopy />}
+                // disabled={props.usernameCopied}
                 onClick={props.handleCopyUserName}
                 data-id={props.passwordId}
-              >Copy User Name</Button>
+              >{props.usernameCopied ? 'User Name Copied' : 'Copy User Name'}</Button>
               <Button
                 aria-label="copy password"
                 size="small"
                 fullWidth
                 variant="contained"
                 color={isActive ? 'warning' : 'secondary'}
-                startIcon={props.passwordCopied ? <CheckCircleOutline /> : <ContentCopy />}
-                disabled={props.passwordCopied}
+                endIcon={props.passwordCopied ? <CheckCircleOutline /> : <ContentCopy />}
+                // disabled={props.passwordCopied}
                 onClick={props.handleCopyPassword}
                 data-id={props.passwordId}
-              >Copy Password</Button>
+              >{props.passwordCopied ? 'Password Copied' : 'Copy Password'}</Button>
             </Stack>
           </CardActions>
         )}
