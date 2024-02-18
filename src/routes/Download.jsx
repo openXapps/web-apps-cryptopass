@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 
@@ -9,23 +9,25 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 
+import { AppContext } from '../context/AppStore';
 import { getDownloadableData } from '../helpers/localstorage';
 import { copyToClipboard } from '../helpers/utilities';
 
-function Download() {
+export default function Download() {
   const rrNavigate = useNavigate();
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [spacing, setSpacing] = useState(smallScreen ? 1 : 2);
+  const [, appDispatch] = useContext(AppContext);
   const [isCopied, setIsCopied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const passwords = getDownloadableData();
 
   useEffect(() => {
+    appDispatch({ type: 'ROUTE', payload: 'Backup my Data' });
     setSpacing(smallScreen ? 1 : 2);
     return () => true;
-  }, [smallScreen]);
+  }, [appDispatch, smallScreen]);
 
   const handleCopyButton = () => {
     copyToClipboard(passwords).finally(() => {
@@ -42,10 +44,9 @@ function Download() {
   return (
     <Container maxWidth="md">
       <Toolbar />
-      <Typography variant="h6" sx={{ mt: spacing }}>Backup My Passwords</Typography>
-      <Paper sx={{ mt: spacing, p: spacing }}>
+      <Paper sx={{ mt: 2, p: spacing }}>
         <TextField
-          sx={{mt: 1}}
+          sx={{ mt: 1 }}
           label="Password Data"
           multiline
           fullWidth
@@ -76,5 +77,3 @@ function Download() {
     </Container>
   );
 }
-
-export default Download;

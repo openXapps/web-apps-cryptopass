@@ -32,7 +32,7 @@ const initialPassword = {
 
 const initialAccount = { username: '', password: '' };
 
-function Home() {
+export default function Home() {
   const rrNavidate = useNavigate();
   // https://stackoverflow.com/questions/59647940/how-can-i-use-ref-in-textfield
   const secretRef = useRef(null);
@@ -247,5 +247,3 @@ function Home() {
     </>
   );
 }
-
-export default Home;

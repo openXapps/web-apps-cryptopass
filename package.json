@@ -1,6 +1,6 @@
 {
   "name": "web-apps-cryptopass",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "homepage": "/apps/cryptopass/",
   "dependencies": {
@@ -19,7 +19,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.22.0",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.6",
     "uuid": "^8.3.2",

@@ -3,6 +3,7 @@ import { createContext, useReducer } from 'react';
 import AppContextReducer from './AppReducer';
 import { initialUse } from '../helpers/initializer';
 import { getSettings } from '../helpers/localstorage';
+import { appName } from '../config/defaults';
 
 // https://reactjs.org/docs/context.html
 
@@ -17,6 +18,7 @@ initialUse();
  */
 const contextData = {
   themeIsDark: getSettings().data.themeIsDark,
+  routePath: appName,
   searchString: ''
 };
 

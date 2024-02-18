@@ -1,4 +1,4 @@
-import { useState, useContext, useId } from 'react';
+import { useState, useContext, useId, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Toolbar from '@mui/material/Toolbar';
@@ -18,21 +18,27 @@ import { AppContext } from '../context/AppStore';
 import { saveLocalStorage, getSettings } from '../helpers/localstorage';
 import { storageItems, sortOrders, passwordLengthMarkers } from '../config/defaults';
 
-const Settings = () => {
+export default function Settings() {
   const rrNavigate = useNavigate();
   const sortOrderId = useId();
-  const [state, dispatch] = useContext(AppContext);
+  const [state, appDispatch] = useContext(AppContext);
   const settings = getSettings().data;
   const [_dencifyPasswordList, setDencifyPasswordList] = useState(settings.passwordListIsDense);
   const [_confirmOnDelete, setConfirmOnDelete] = useState(settings.confirmOnDelete);
   const [_sortOrder, setSortOrder] = useState(settings.sortOrder);
   // const [_passwordLength, setPasswordLength] = useState(settings.passwordLengthMarker);
 
+  useEffect(() => {
+    appDispatch({ type: 'ROUTE', payload: 'Application settings' });
+
+    return () => true;
+  }, [appDispatch]);
+
   // Managed state and persistence
   const handleTheme = () => {
     const _isDark = !state.themeIsDark;
     saveLocalStorage(storageItems.settings, { ...settings, themeIsDark: _isDark });
-    dispatch({ type: 'THEME', payload: _isDark });
+    appDispatch({ type: 'THEME', payload: _isDark });
   };
 
   const handleDencifyPasswordList = () => {
@@ -58,7 +64,7 @@ const Settings = () => {
   return (
     <Container maxWidth="sm">
       <Toolbar />
-      <Typography variant="h6" sx={{ mt: 2 }}>Application settings</Typography>
+      {/* <Typography variant="h6" sx={{ mt: 2 }}>Application settings</Typography> */}
       <Paper sx={{ mt: 2, p: 2 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
           <Typography>Dark Mode</Typography>
@@ -72,7 +78,7 @@ const Settings = () => {
           <Typography>Confirm On Delete</Typography>
           <Switch checked={_confirmOnDelete} onChange={handleConfirmOnDelete} />
         </Stack>
-        <FormControl fullWidth sx={{ mt:2 }}>
+        <FormControl fullWidth sx={{ mt: 2 }}>
           <InputLabel id={sortOrderId}>Sort Password List</InputLabel>
           <Select value={_sortOrder} onChange={handleSortOrderChange} labelId={sortOrderId} label="Sort Password List">
             {sortOrders.map((v, i) => <MenuItem key={i} value={v.value}>{v.label}</MenuItem>)}
@@ -100,5 +106,3 @@ const Settings = () => {
     </Container>
   );
 };
-
-export default Settings;

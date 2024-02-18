@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { v1 as uuidv1 } from 'uuid';
 import { generate } from 'generate-password-browser';
@@ -33,6 +33,7 @@ import {
   getSettings
 } from '../helpers/localstorage';
 import { dateToString, decryptCipher, encryptString } from '../helpers/utilities';
+import { AppContext } from '../context/AppStore';
 
 const initialFieldData = {
   passwordId: '',
@@ -47,15 +48,16 @@ const initialFieldData = {
 
 function Edit() {
   const rrNavigate = useNavigate();
-  const rrPath = useLocation().pathname;
+  const { pathname } = useLocation();
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const secretRef = useRef(null);
+  const [, appDispatch] = useContext(AppContext);
   const passwordLength = getSettings().data.passwordLengthMarker;
   const isDark = !getSettings().data.themeIsDark
   const { passwordId } = useParams();
 
   // Component state
-  const [routeHeader, setRouteHeader] = useState('');
+  // const [routeHeader, setRouteHeader] = useState('');
   const [editMode, setEditMode] = useState('');
   const [fields, setFields] = useState(initialFieldData);
   const [secret, setSecret] = useState('');
@@ -68,15 +70,15 @@ function Edit() {
   const [patternPath, setPatternPath] = useState([]);
 
   useEffect(() => {
-    if (rrPath === '/edit/new') {
+    if (pathname === '/edit/new') {
       setEditMode('NEW');
-      setRouteHeader('Create New Password');
+      appDispatch({ type: 'ROUTE', payload: 'Create New Password' });
       setIsLocked(false);
       secretRef.current.focus();
     }
-    if (rrPath !== '/edit/new' && passwordId) {
+    if (pathname !== '/edit/new' && passwordId) {
       setEditMode('EDIT');
-      setRouteHeader('Edit Password');
+      appDispatch({ type: 'ROUTE', payload: 'Edit Password' });
       let password = getPasswordById(passwordId).data;
       if (password.length > 0) setFields({
         accountName: '*********',
@@ -92,7 +94,7 @@ function Edit() {
     }
 
     return () => true;
-  }, [rrPath, passwordId]);
+  }, [pathname, passwordId, appDispatch]);
 
   /************************************************************************************
    * FIELD CHANGE handlers
@@ -275,7 +277,7 @@ function Edit() {
     <>
       <Container maxWidth="sm">
         <Toolbar />
-        <Typography variant="h6" sx={{ mt: 2 }}>{routeHeader}</Typography>
+        {/* <Typography variant="h6" sx={{ mt: 2 }}>{routeHeader}</Typography> */}
         <Paper sx={{ mt: 2, p: 2 }}>
           <Stack spacing={2}>
             <Box component="form" noValidate onSubmit={handleUnlockButton}>

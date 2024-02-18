@@ -1,5 +1,10 @@
 import { useContext } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+} from 'react-router-dom';
 
 // Material UI
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,7 +17,7 @@ import light from './themes/light';
 import dark from './themes/dark';
 
 // App routes
-import Header from './routes/Header';
+import Layout from './routes/Layout';
 import Home from './routes/Home';
 import Edit from './routes/Edit';
 import Settings from './routes/Settings';
@@ -20,33 +25,32 @@ import Download from './routes/Download';
 import Upload from './routes/Upload';
 import NoPage from './routes/NoPage';
 
-function App() {
+export default function App() {
   const [appState] = useContext(AppContext);
   const appTheme = createTheme(appState.themeIsDark ? dark : light);
-  // const home = '/';
   const home = '/apps/cryptopass';
+  // const home = '/';
 
-  // https://reactrouter.com/docs/en/v6/getting-started/tutorial
+  const router = createBrowserRouter(createRoutesFromElements(
+    <Route path="/" element={<Layout />}>
+      <Route index element={<Home />} />
+      <Route path="edit" element={<Edit />}>
+        <Route path=":passwordId" element={<Edit />} />
+        <Route path="new" element={<Edit />} />
+      </Route>
+      <Route path="settings" element={<Settings />} />
+      <Route path="download" element={<Download />} />
+      <Route path="upload" element={<Upload />} />
+      <Route path="*" element={<NoPage />} />
+    </Route >
+  ), { basename: home });
 
   return (
     <ThemeProvider theme={appTheme}>
       <CssBaseline />
-      <BrowserRouter basename={home}>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/edit" element={<Edit />}>
-            <Route path=":passwordId" element={<Edit />} />
-            <Route path="new" element={<Edit />} />
-          </Route>
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/download" element={<Download />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="*" element={<NoPage />} />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }
 
-export default App;
+

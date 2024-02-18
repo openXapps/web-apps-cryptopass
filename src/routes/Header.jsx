@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -10,7 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -18,33 +17,24 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 import SearchField from '../components/SearchField';
 import { AppContext } from '../context/AppStore';
-// import AppContextReducer from '../context/AppReducer';
 import { getSettings } from '../helpers/localstorage';
+import { appName } from '../config/defaults';
 
 function Header() {
   const rrNavigate = useNavigate();
-  const rrLocation = useLocation();
+  const { pathname } = useLocation();
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [anchorEl, setAnchorEl] = useState(null);
   const [appState, appDispatch] = useContext(AppContext);
-  // const [searchField, setSearchField] = useState(appState.searchField);
-  // const searchFieldDeferred = useDeferredValue(appState.searchString);
 
-  // console.log('Header: appState...', appState);
-
-  // useEffect(() => {
-  //   appDispatch({ type: 'SEARCH', payload: searchFieldDeferred });
-
-  //   return () => true;
-  // }, [searchFieldDeferred, appDispatch]);
-
-  const handleHomeButton = () => {
-    if (rrLocation.pathname !== '/') {
-      rrNavigate('/', { replace: true });
-    } else {
-      window.location.assign('https://www.openapps.co.za');
+  // Cannot use dispatch outside effect while component renders
+  useEffect(() => {
+    if (pathname === '/' && appState.routePath !== appName) {
+      appDispatch({ type: 'ROUTE', payload: appName });
     }
-  };
+
+    return () => true;
+  }, [pathname, appDispatch, appState.routePath])
 
   const handleMenuToggle = (e) => {
     setAnchorEl(e.currentTarget);
@@ -68,20 +58,23 @@ function Header() {
     <AppBar color="inherit">
       <Container maxWidth="md" disableGutters>
         <Toolbar >
-          <Box mr={1}>
-            <IconButton
-              aria-label="home button"
-              color="inherit"
-              onClick={handleHomeButton}
-            >{rrLocation.pathname === '/' ? <HomeIcon /> : <ArrowBackIcon />}</IconButton></Box>
+          {pathname !== '/' && (
+            <Box mr={1}>
+              <IconButton
+                aria-label="home button"
+                color="inherit"
+                onClick={() => rrNavigate('/', { replace: true })}
+              >{pathname === '/' ? null : <ArrowBackIcon />}</IconButton>
+            </Box>
+          )}
           <Typography
             sx={{ flexGrow: 1 }}
             variant="h6"
-          >CryptoPASS {smallScreen ? null : (
+          >{appState.routePath} {!smallScreen && pathname === '/' && (
             <span style={{ fontSize: 12 }}>v{getSettings().data.version}</span>
           )}
           </Typography>
-          {rrLocation.pathname === '/' ? (
+          {pathname === '/' ? (
             <Box display="flex" flexDirection="row">
               {!smallScreen && (
                 <SearchField

@@ -2,6 +2,9 @@
  * DEFAULT DATA FOR INITIAL APP LOAD
  */
 
+// App name
+export const appName = 'CryptoPASS';
+
 // Local storage object names
 export const storageItems = {
   settings: 'cryptopass-settings',
@@ -62,3 +65,4 @@ export const sortOrders = [
   {value: 10, label: 'By Last Used'},
   {value: 20, label: 'By Title'},
 ];
+

@@ -4,7 +4,7 @@
  * @param {any} action Reducer action type and payload
  * @returns New context state
  */
- const AppContextReducer = (state, action) => {
+const AppContextReducer = (state, action) => {
   // console.log('AppContextReducer: action type......', action.type);
   // console.log('AppContextReducer: action payload...', action.payload);
   switch (action.type) {
@@ -12,6 +12,11 @@
       return {
         ...state,
         themeIsDark: action.payload
+      };
+    case 'ROUTE':
+      return {
+        ...state,
+        routePath: action.payload
       };
     case 'SEARCH':
       return {

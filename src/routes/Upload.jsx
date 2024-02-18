@@ -1,17 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useMediaQuery } from '@mui/material';
 import Container from '@mui/material/Container';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { AppContext } from '../context/AppStore';
 import LoadFileButton from '../components/LoadFileButton';
 import useFileReader from '../hooks/useFileReader';
 import { saveLocalStorage } from '../helpers/localstorage';
@@ -25,11 +24,12 @@ import { validateImportString } from '../helpers/utilities';
 // return e.currentTarget.result;
 // }
 
-function Upload() {
+export default function Upload() {
   const rrNavigate = useNavigate();
   const smallScreen = useMediaQuery(theme => theme.breakpoints.down('sm'));
   const [spacing, setSpacing] = useState(smallScreen ? 1 : 2);
   const [{ frResult, frError, frLoading, frLoaded }, setFrFile] = useFileReader('readAsText');
+  const [, appDispatch] = useContext(AppContext);
   const [passwordsString, setPasswordsString] = useState('');
   const [passwordsObject, setPasswordsObject] = useState('');
   const [isValid, setIsValid] = useState(false);
@@ -38,9 +38,10 @@ function Upload() {
   // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    appDispatch({ type: 'ROUTE', payload: 'Restore my Data' });
     setSpacing(smallScreen ? 1 : 2);
     return () => true;
-  }, [smallScreen]);
+  }, [appDispatch, smallScreen]);
 
   useEffect(() => {
     setPasswordsString(frResult);
@@ -79,13 +80,8 @@ function Upload() {
   return (
     <Container maxWidth="md">
       <Toolbar />
-      <Box mt={spacing} mr={spacing}>
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-          <Typography variant="h6">Restore My Passwords</Typography>
-          {frLoading && <CircularProgress size={24} color="info" />}
-        </Stack>
-      </Box>
-      <Paper sx={{ mt: spacing, p: spacing }}>
+      {frLoading && <CircularProgress sx={{ my: spacing }} size={24} color="info" />}
+      <Paper sx={{ mt: 2, p: spacing }}>
         <TextField
           sx={{ mt: 1 }}
           error={isError}
@@ -130,5 +126,3 @@ function Upload() {
     </Container>
   );
 }
-
-export default Upload;
